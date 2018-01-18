@@ -1,1 +1,3 @@
 - add typehints, clean docblocks
+- remove se face altfel cu vue 2
+- treeview nu merge

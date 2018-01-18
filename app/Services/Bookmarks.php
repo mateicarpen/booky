@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Bookmark;
 use App\BookmarkType;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class Bookmarks
 {
@@ -42,9 +43,9 @@ class Bookmarks
     }
 
     /**
-     * @return Bookmark[]
+     * @return Collection of Bookmark
      */
-    public function getAllRootFolders(): array
+    public function getAllRootFolders(): Collection
     {
         return $this->currentUser->bookmarks()
             ->whereNull('parent_id')
@@ -53,9 +54,9 @@ class Bookmarks
     }
 
     /**
-     * @return Bookmark[]
+     * @return Collection of Bookmark
      */
-    public function getAllRootBookmarks(): array
+    public function getAllRootBookmarks(): Collection
     {
         return $this->currentUser->bookmarks()
             ->whereNull('parent_id')
@@ -65,9 +66,9 @@ class Bookmarks
 
     /**
      * @param int $parentId
-     * @return Bookmark[]
+     * @return Collection of Bookmark
      */
-    public function getFoldersByParent($parentId): array
+    public function getFoldersByParent($parentId): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('parent_id', $parentId)
@@ -77,9 +78,9 @@ class Bookmarks
 
     /**
      * @param int $parentId
-     * @return Bookmark[]
+     * @return Collection of Bookmark
      */
-    public function getBookmarksByParent($parentId): array
+    public function getBookmarksByParent($parentId): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('parent_id', $parentId)

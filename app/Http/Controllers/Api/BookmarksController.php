@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\Bookmarks;
@@ -15,7 +15,7 @@ class BookmarksController extends Controller
 
     public function __construct(AuthManager $authManager)
     {
-        $this->bookmarks = new Bookmarks($authManager->guard('api')->user);
+        $this->bookmarks = new Bookmarks($authManager->guard('api')->user());
     }
 
     /**
@@ -78,7 +78,7 @@ class BookmarksController extends Controller
         $typeId = $request->get('type_id');
         $url = $request->get('url');
 
-        if (!$this->bookmarks->hasAccessToFolder($parentId)) {
+        if ($parentId && !$this->bookmarks->hasAccessToFolder($parentId)) {
             throw new NotFoundHttpException('There is no such folder');
         }
 

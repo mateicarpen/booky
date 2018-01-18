@@ -19,7 +19,7 @@ class CreateBookmarks extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('parent_id')->nullable();
             $table->string('name');
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->text('icon')->nullable();
             $table->timestamps();
 
