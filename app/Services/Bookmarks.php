@@ -25,18 +25,17 @@ class Bookmarks
     /**
      * Returns an array containing all the parents of this folder (starting from children of the root).
      *
-     * @param Bookmark $bookmark
+     * @param Bookmark $folder
      * @return Bookmark[]
      */
-    public function getParentsList($bookmark): array
+    public function getParentsList($folder): array
     {
         $parents = [];
 
-        while ($bookmark->parent_id !== null) {
-            $parent = $bookmark->parent;
-
+        while ($folder->parent_id !== null) {
+            $parent = $folder->parent;
             $parents[] = $parent;
-            $bookmark = $parent;
+            $folder = $parent;
         }
 
         return $parents;

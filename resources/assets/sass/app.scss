@@ -1,9 +1,44 @@
 
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+@import url("https://fonts.googleapis.com/css?family=Lato:100,300,400,700");
 
 // Variables
 @import "variables";
 
 // Bootstrap
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "bootstrap-treeview";
+
+body {
+  font-family: 'Lato';
+}
+
+
+.fa-btn {
+  margin-right: 6px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.folder-list a, .bookmark-list a {
+  cursor: pointer;
+}
+
+.top-button-group {
+  display: inline-block;
+  text-align: right;
+  float: right;
+}
+
+.top-button-group > span {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.folder-list input[type="checkbox"], .bookmark-list input[type="checkbox"] {
+  margin-right: 5px;
+}

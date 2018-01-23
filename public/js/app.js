@@ -689,8 +689,13 @@ module.exports = __webpack_require__(38);
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eventManager__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__persistence__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__sideMenu__ = __webpack_require__(50);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -716,110 +721,19 @@ window.Vue = __webpack_require__(9);
 //});
 
 
-var persistence = {
-    apiPrefix: '/api/v1',
 
-    getFolderTree: function getFolderTree(callback) {
-        this.makeRequest('GET', '/bookmarks/folderTree', callback);
-    },
 
-    getRootFolder: function getRootFolder(callback) {
-        this.makeRequest('GET', '/bookmarks', callback);
-    },
 
-    getFolder: function getFolder(id, callback) {
-        this.makeRequest('GET', '/bookmarks/' + id, callback);
-    },
-
-    createFolder: function createFolder(data, callback) {
-        this.makeRequest('POST', '/bookmarks', callback, data);
-    },
-
-    editFolder: function editFolder(id, data, callback) {
-        this.makeRequest('PUT', '/bookmarks/' + id, callback, data);
-    },
-
-    deleteFolder: function deleteFolder(id, callback) {
-        this.makeRequest('DELETE', '/bookmarks/' + id, callback);
-    },
-
-    searchBookmarks: function searchBookmarks(searchTerm, callback) {
-        this.makeRequest('GET', '/bookmarks/search/' + searchTerm, callback);
-    },
-
-    createBookmark: function createBookmark(data, callback) {
-        this.makeRequest('POST', '/bookmarks', callback, data);
-    },
-
-    editBookmark: function editBookmark(id, data, callback) {
-        this.makeRequest('PUT', '/bookmarks/' + id, callback, data);
-    },
-
-    deleteBookmark: function deleteBookmark(id, callback) {
-        this.makeRequest('DELETE', '/bookmarks/' + id, callback);
-    },
-
-    deleteBookmarks: function deleteBookmarks(data, callback) {
-        this.makeRequest('POST', '/bookmarks/bulkDelete', callback, data);
-    },
-
-    moveBookmarks: function moveBookmarks(data, callback) {
-        this.makeRequest('POST', '/bookmarks/bulkMove', callback, data);
-    },
-
-    makeRequest: function makeRequest(method, url, callback, data) {
-        $.ajax({
-            url: this.apiPrefix + url,
-            data: data,
-            type: method,
-            headers: { 'Authorization': "Bearer " + window.apiToken },
-            success: callback
-        });
-    }
-};
-
-var sideMenu = {
-    element: '.treeview',
-
-    initialize: function initialize() {
-        persistence.getFolderTree(function (data) {
-            data = formatData(data);
-
-            $(this.element).treeview({
-                data: data,
-                levels: 1,
-                onNodeSelected: function onNodeSelected(event, node) {
-                    vue.clickedFolder(node.folderId);
-                }
-            });
-        }.bind(this));
-    },
-
-    unselectAll: function unselectAll() {
-        var selectedNodes = $(this.element).treeview('getSelected');
-
-        $.each(selectedNodes, function (key, node) {
-            $(this.element).treeview('unselectNode', node);
-        }.bind(this));
-    }
-};
-
-var formatData = function formatData(data) {
-    for (var i = 0, length = data.length; i < length; i++) {
-        data[i].text += " (" + data[i].bookmarkCount + ")";
-
-        if (data[i].nodes) {
-            data[i].nodes = formatData(data[i].nodes);
-        }
-    }
-
-    return data;
-};
+var eventManager = new __WEBPACK_IMPORTED_MODULE_0__eventManager__["a" /* default */]();
+var persistence = new __WEBPACK_IMPORTED_MODULE_1__persistence__["a" /* default */]();
+var sideMenu = new __WEBPACK_IMPORTED_MODULE_2__sideMenu__["a" /* default */](persistence, eventManager);
 
 var vue = new Vue({
     el: '#bookmark-index-page',
 
     data: {
+        eventManager: eventManager,
+
         parent: null,
         breadcrumbs: [],
         folders: [],
@@ -839,6 +753,8 @@ var vue = new Vue({
     },
 
     mounted: function mounted() {
+        this.eventManager.on('clickedFolder', this.clickedFolder);
+
         this.loadData();
         sideMenu.initialize();
     },
@@ -947,7 +863,8 @@ var vue = new Vue({
                 sideMenu.initialize();
             }.bind(this));
 
-            this.folders.$remove(folder);
+            var index = this.folders.indexOf(folder);
+            this.folders.splice(index, 1);
         },
 
         showCreateBookmarkForm: function showCreateBookmarkForm() {
@@ -991,7 +908,8 @@ var vue = new Vue({
 
             persistence.deleteBookmark(bookmark.id);
 
-            this.bookmarks.$remove(bookmark);
+            var index = this.bookmarks.indexOf(bookmark);
+            this.bookmarks.splice(index, 1);
         },
 
         deleteSelected: function deleteSelected() {
@@ -1003,59 +921,17 @@ var vue = new Vue({
                 sideMenu.initialize();
             });
 
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = this.bookmarks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var bookmark = _step.value;
-
-                    if (this.selectedBookmarks.indexOf(bookmark.id.toString()) >= 0) {
-                        this.bookmarks.$remove(bookmark);
-                    }
+            this.bookmarks.forEach(function (bookmark, index) {
+                if (this.selectedBookmarks.indexOf(bookmark.id) >= 0) {
+                    this.bookmarks.splice(index, 1);
                 }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
+            }.bind(this));
 
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = this.folders[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var folder = _step2.value;
-
-                    if (this.selectedBookmarks.indexOf(folder.id.toString()) >= 0) {
-                        this.folders.$remove(folder);
-                    }
+            this.folders.forEach(function (folder, index) {
+                if (this.selectedBookmarks.indexOf(folder.id) >= 0) {
+                    this.folders.splice(index, 1);
                 }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
+            }.bind(this));
 
             this.selectedBookmarks = [];
         },
@@ -31807,6 +31683,223 @@ module.exports = function spread(callback) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Persistence = function () {
+    function Persistence() {
+        _classCallCheck(this, Persistence);
+
+        this.apiPrefix = '/api/v1';
+    }
+
+    _createClass(Persistence, [{
+        key: 'getFolderTree',
+        value: function getFolderTree(callback) {
+            this.makeRequest('GET', '/bookmarks/folderTree', callback);
+        }
+    }, {
+        key: 'getRootFolder',
+        value: function getRootFolder(callback) {
+            this.makeRequest('GET', '/bookmarks', callback);
+        }
+    }, {
+        key: 'getFolder',
+        value: function getFolder(id, callback) {
+            this.makeRequest('GET', '/bookmarks/' + id, callback);
+        }
+    }, {
+        key: 'createFolder',
+        value: function createFolder(data, callback) {
+            this.makeRequest('POST', '/bookmarks', callback, data);
+        }
+    }, {
+        key: 'editFolder',
+        value: function editFolder(id, data, callback) {
+            this.makeRequest('PUT', '/bookmarks/' + id, callback, data);
+        }
+    }, {
+        key: 'deleteFolder',
+        value: function deleteFolder(id, callback) {
+            this.makeRequest('DELETE', '/bookmarks/' + id, callback);
+        }
+    }, {
+        key: 'searchBookmarks',
+        value: function searchBookmarks(searchTerm, callback) {
+            this.makeRequest('GET', '/bookmarks/search/' + searchTerm, callback);
+        }
+    }, {
+        key: 'createBookmark',
+        value: function createBookmark(data, callback) {
+            this.makeRequest('POST', '/bookmarks', callback, data);
+        }
+    }, {
+        key: 'editBookmark',
+        value: function editBookmark(id, data, callback) {
+            this.makeRequest('PUT', '/bookmarks/' + id, callback, data);
+        }
+    }, {
+        key: 'deleteBookmark',
+        value: function deleteBookmark(id, callback) {
+            this.makeRequest('DELETE', '/bookmarks/' + id, callback);
+        }
+    }, {
+        key: 'deleteBookmarks',
+        value: function deleteBookmarks(data, callback) {
+            this.makeRequest('POST', '/bookmarks/bulkDelete', callback, data);
+        }
+    }, {
+        key: 'moveBookmarks',
+        value: function moveBookmarks(data, callback) {
+            this.makeRequest('POST', '/bookmarks/bulkMove', callback, data);
+        }
+    }, {
+        key: 'makeRequest',
+        value: function makeRequest(method, url, callback, data) {
+            $.ajax({
+                url: this.apiPrefix + url,
+                data: data,
+                type: method,
+                headers: { 'Authorization': "Bearer " + window.apiToken },
+                success: callback
+            });
+        }
+    }]);
+
+    return Persistence;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Persistence);
+;
+
+/***/ }),
+/* 50 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SideMenu = function () {
+    function SideMenu(persistence, eventManager) {
+        _classCallCheck(this, SideMenu);
+
+        this.element = '.treeview';
+        this.persistence = persistence;
+        this.eventManager = eventManager;
+    }
+
+    _createClass(SideMenu, [{
+        key: 'initialize',
+        value: function initialize() {
+            this.persistence.getFolderTree(function (data) {
+                data = this.formatData(data);
+
+                $(this.element).treeview({
+                    data: data,
+                    levels: 1,
+                    onNodeSelected: function (event, node) {
+                        this.eventManager.trigger('clickedFolder', node.folderId);
+
+                        //vue.clickedFolder(node.folderId);
+                    }.bind(this)
+                });
+            }.bind(this));
+        }
+    }, {
+        key: 'unselectAll',
+        value: function unselectAll() {
+            var selectedNodes = $(this.element).treeview('getSelected');
+
+            $.each(selectedNodes, function (key, node) {
+                $(this.element).treeview('unselectNode', node);
+            }.bind(this));
+        }
+    }, {
+        key: 'formatData',
+        value: function formatData(data) {
+            for (var i = 0, length = data.length; i < length; i++) {
+                data[i].text += " (" + data[i].bookmarkCount + ")";
+
+                if (data[i].nodes) {
+                    data[i].nodes = this.formatData(data[i].nodes);
+                }
+            }
+
+            return data;
+        }
+    }]);
+
+    return SideMenu;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (SideMenu);
+;
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var EventManager = function () {
+    function EventManager() {
+        _classCallCheck(this, EventManager);
+
+        this.listeners = [];
+    }
+
+    _createClass(EventManager, [{
+        key: "on",
+        value: function on(eventName, listener) {
+            if (!this.listeners[eventName]) {
+                this.listeners[eventName] = [];
+            }
+
+            this.listeners[eventName].push(listener);
+        }
+    }, {
+        key: "trigger",
+        value: function trigger(eventName) {
+            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                args[_key - 1] = arguments[_key];
+            }
+
+            if (!this.listeners[eventName]) {
+                return;
+            }
+
+            this.listeners[eventName].forEach(function (listener) {
+                listener.apply(undefined, args);
+            });
+        }
+    }]);
+
+    return EventManager;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (EventManager);
 
 /***/ })
 ],[10]);

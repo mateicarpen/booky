@@ -2,23 +2,6 @@
 
 @section('content')
 
-<style>
-    .top-button-group {
-        display: inline-block;
-        text-align: right;
-        float: right;
-    }
-
-    .top-button-group > span {
-        display: inline-block;
-        margin-right: 10px;
-    }
-
-    .folder-list input[type="checkbox"], .bookmark-list input[type="checkbox"] {
-        margin-right: 5px;
-    }
-</style>
-
 <div id="bookmark-index-page">
     <div class="container spark-screen">
         <div class="row">

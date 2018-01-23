@@ -11,9 +11,10 @@ let mix = require('laravel-mix');
  |
  */
 
+mix.sass('resources/assets/sass/app.scss', 'public/css');
+
 mix.js('resources/assets/js/app.js', 'public/js')
-    .extract(['vue'], '/js/vendor.js')
-    .sass('resources/assets/sass/app.scss', 'public/css');
+    .extract(['vue'], '/js/vendor.js');
 
 mix.scripts([
     'resources/assets/js/vendor/bootstrap-treeview.js'

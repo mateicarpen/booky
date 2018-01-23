@@ -22,111 +22,20 @@ window.Vue = require('vue');
 //    el: '#app'
 //});
 
+import EventManager from './eventManager';
+import Persistence from './persistence';
+import SideMenu from './sideMenu';
 
-var persistence = {
-    apiPrefix: '/api/v1',
-
-    getFolderTree: function(callback) {
-        this.makeRequest('GET', '/bookmarks/folderTree', callback);
-    },
-
-    getRootFolder: function(callback) {
-        this.makeRequest('GET', '/bookmarks', callback);
-    },
-
-    getFolder: function(id, callback) {
-        this.makeRequest('GET', '/bookmarks/' + id, callback);
-    },
-
-    createFolder: function(data, callback) {
-        this.makeRequest('POST', '/bookmarks', callback, data);
-    },
-
-    editFolder: function(id, data, callback) {
-        this.makeRequest('PUT', '/bookmarks/'+ id, callback, data);
-    },
-
-    deleteFolder: function(id, callback) {
-        this.makeRequest('DELETE', '/bookmarks/' + id, callback);
-    },
-
-    searchBookmarks: function(searchTerm, callback) {
-        this.makeRequest('GET', '/bookmarks/search/' + searchTerm, callback);
-    },
-
-    createBookmark: function(data, callback) {
-        this.makeRequest('POST', '/bookmarks', callback, data);
-    },
-
-    editBookmark: function(id, data, callback) {
-        this.makeRequest('PUT', '/bookmarks/' + id, callback, data);
-    },
-
-    deleteBookmark: function(id, callback) {
-        this.makeRequest('DELETE', '/bookmarks/' + id, callback);
-    },
-
-    deleteBookmarks: function(data, callback) {
-        this.makeRequest('POST', '/bookmarks/bulkDelete', callback, data);
-    },
-
-    moveBookmarks: function(data, callback) {
-        this.makeRequest('POST', '/bookmarks/bulkMove', callback, data);
-    },
-
-    makeRequest: function(method, url, callback, data) {
-        $.ajax({
-            url: this.apiPrefix + url,
-            data: data,
-            type: method,
-            headers: {'Authorization': "Bearer " + window.apiToken},
-            success: callback
-        });
-    }
-};
-
-var sideMenu = {
-    element: '.treeview',
-
-    initialize: function() {
-        persistence.getFolderTree(function (data) {
-            data = formatData(data);
-
-            $(this.element).treeview({
-                data: data,
-                levels: 1,
-                onNodeSelected: function(event, node) {
-                    vue.clickedFolder(node.folderId);
-                },
-            });
-        }.bind(this));
-    },
-
-    unselectAll: function() {
-        var selectedNodes = $(this.element).treeview('getSelected');
-
-        $.each(selectedNodes, function(key, node) {
-            $(this.element).treeview('unselectNode', node);
-        }.bind(this));
-    }
-};
-
-var formatData = function(data) {
-    for (var i = 0, length = data.length; i < length; i++) {
-        data[i].text += " (" + data[i].bookmarkCount + ")";
-
-        if (data[i].nodes) {
-            data[i].nodes = formatData(data[i].nodes);
-        }
-    }
-
-    return data;
-};
+let eventManager = new EventManager();
+let persistence = new Persistence();
+let sideMenu = new SideMenu(persistence, eventManager);
 
 var vue = new Vue({
     el: '#bookmark-index-page',
 
     data: {
+        eventManager: eventManager,
+
         parent: null,
         breadcrumbs: [],
         folders: [],
@@ -146,6 +55,8 @@ var vue = new Vue({
     },
 
     mounted: function() {
+        this.eventManager.on('clickedFolder', this.clickedFolder);
+
         this.loadData();
         sideMenu.initialize();
     },
@@ -253,7 +164,8 @@ var vue = new Vue({
                 sideMenu.initialize();
             }.bind(this));
 
-            this.folders.$remove(folder);
+            var index = this.folders.indexOf(folder);
+            this.folders.splice(index, 1)
         },
 
         showCreateBookmarkForm: function() {
@@ -297,7 +209,8 @@ var vue = new Vue({
 
             persistence.deleteBookmark(bookmark.id);
 
-            this.bookmarks.$remove(bookmark);
+            var index = this.bookmarks.indexOf(bookmark);
+            this.bookmarks.splice(index, 1)
         },
 
         deleteSelected: function() {
@@ -309,17 +222,17 @@ var vue = new Vue({
                 sideMenu.initialize();
             });
 
-            for (var bookmark of this.bookmarks) {
-                if (this.selectedBookmarks.indexOf(bookmark.id.toString()) >= 0) {
-                    this.bookmarks.$remove(bookmark);
+            this.bookmarks.forEach(function(bookmark, index) {
+                if (this.selectedBookmarks.indexOf(bookmark.id) >= 0) {
+                    this.bookmarks.splice(index, 1);
                 }
-            }
+            }.bind(this));
 
-            for (var folder of this.folders) {
-                if (this.selectedBookmarks.indexOf(folder.id.toString()) >= 0) {
-                    this.folders.$remove(folder);
+            this.folders.forEach(function(folder, index) {
+                if (this.selectedBookmarks.indexOf(folder.id) >= 0) {
+                    this.folders.splice(index, 1);
                 }
-            }
+            }.bind(this));
 
             this.selectedBookmarks = [];
         },
@@ -347,6 +260,6 @@ var vue = new Vue({
         cancelSelection: function() {
             this.selectedBookmarks = [];
             this.movingMode = false;
-        }
+        },
     }
 });
