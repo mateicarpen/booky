@@ -5,8 +5,8 @@ webpackJsonp([0],[
 "use strict";
 
 
-var bind = __webpack_require__(3);
-var isBuffer = __webpack_require__(19);
+var bind = __webpack_require__(4);
+var isBuffer = __webpack_require__(20);
 
 /*global toString:true*/
 
@@ -317,7 +317,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(21);
+var normalizeHeaderName = __webpack_require__(22);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -333,10 +333,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(5);
+    adapter = __webpack_require__(6);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(5);
+    adapter = __webpack_require__(6);
   }
   return adapter;
 }
@@ -407,10 +407,119 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -428,20 +537,20 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 4 */,
-/* 5 */
+/* 5 */,
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(22);
-var buildURL = __webpack_require__(24);
-var parseHeaders = __webpack_require__(25);
-var isURLSameOrigin = __webpack_require__(26);
-var createError = __webpack_require__(6);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(27);
+var settle = __webpack_require__(23);
+var buildURL = __webpack_require__(25);
+var parseHeaders = __webpack_require__(26);
+var isURLSameOrigin = __webpack_require__(27);
+var createError = __webpack_require__(7);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(28);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -538,7 +647,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(28);
+      var cookies = __webpack_require__(29);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -616,13 +725,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(23);
+var enhanceError = __webpack_require__(24);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -641,7 +750,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -653,7 +762,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -679,23 +788,23 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 9 */,
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
-module.exports = __webpack_require__(38);
+__webpack_require__(12);
+module.exports = __webpack_require__(51);
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eventManager__ = __webpack_require__(51);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__persistence__ = __webpack_require__(49);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__sideMenu__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eventManager__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__persistence__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__sideMenu__ = __webpack_require__(41);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -703,9 +812,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(12);
+__webpack_require__(13);
 
-window.Vue = __webpack_require__(9);
+window.Vue = __webpack_require__(10);
 
 //
 ///**
@@ -724,251 +833,28 @@ window.Vue = __webpack_require__(9);
 
 
 
-var eventManager = new __WEBPACK_IMPORTED_MODULE_0__eventManager__["a" /* default */]();
-var persistence = new __WEBPACK_IMPORTED_MODULE_1__persistence__["a" /* default */]();
-var sideMenu = new __WEBPACK_IMPORTED_MODULE_2__sideMenu__["a" /* default */](persistence, eventManager);
+window.eventManager = new __WEBPACK_IMPORTED_MODULE_0__eventManager__["a" /* default */]();
+window.persistence = new __WEBPACK_IMPORTED_MODULE_1__persistence__["a" /* default */]();
+window.sideMenu = new __WEBPACK_IMPORTED_MODULE_2__sideMenu__["a" /* default */](persistence, eventManager);
+
+Vue.component('listing-page', __webpack_require__(42));
+Vue.component('create-folder-form', __webpack_require__(45));
+Vue.component('create-bookmark-form', __webpack_require__(48));
+Vue.component('edit-folder-form', __webpack_require__(65));
+Vue.component('edit-bookmark-form', __webpack_require__(62));
+
+window.em = new Vue({}); // event manager
 
 var vue = new Vue({
-    el: '#bookmark-index-page',
-
-    data: {
-        eventManager: eventManager,
-
-        parent: null,
-        breadcrumbs: [],
-        folders: [],
-        bookmarks: [],
-        searchTerm: '',
-        createFolderModel: {},
-        editFolderModel: {},
-        createBookmarkModel: {},
-        editBookmarkModel: {},
-        selectedBookmarks: [],
-        movingMode: false,
-
-        createFolderFormElement: '#create-folder-modal',
-        editFolderFormElement: '#edit-folder-modal',
-        createBookmarkFormElement: '#create-bookmark-modal',
-        editBookmarkFormElement: '#edit-bookmark-modal'
-    },
-
-    mounted: function mounted() {
-        this.eventManager.on('clickedFolder', this.clickedFolder);
-
-        this.loadData();
-        sideMenu.initialize();
-    },
-
-    methods: {
-        loadData: function loadData() {
-            this.loadFolder();
-        },
-
-        clickedFolder: function clickedFolder(id) {
-            if (this.movingMode) {
-                this.moveSelected(id);
-            } else {
-                this.loadFolder(id);
-            }
-        },
-
-        loadFolder: function loadFolder(id, unselectSideMenu) {
-            var callback = function (response) {
-                this.folders = response.folders;
-                this.bookmarks = response.bookmarks;
-                this.parent = response.parent;
-                this.breadcrumbs = response.breadcrumbs;
-            }.bind(this);
-
-            if (id != null) {
-                persistence.getFolder(id, callback);
-            } else {
-                persistence.getRootFolder(callback);
-            }
-
-            if (unselectSideMenu) {
-                sideMenu.unselectAll();
-            }
-        },
-
-        search: function search() {
-            // inclusiv daca e un spatiu gol
-            if (this.searchTerm === '') {
-                this.loadFolder(null, true);
-                return;
-            }
-
-            persistence.searchBookmarks(this.searchTerm, function (response) {
-                this.bookmarks = [];
-                this.folders = [];
-                this.breadcrumbs = [];
-                this.parent = { name: "Search results for '" + this.searchTerm + "'" };
-
-                for (var i = 0; i < response.length; i++) {
-                    if (response[i].type_id == 2) {
-                        // TODO: const
-                        this.folders.push(response[i]);
-                    } else {
-                        this.bookmarks.push(response[i]);
-                    }
-                }
-
-                this.searchTerm = '';
-                sideMenu.unselectAll();
-            }.bind(this));
-        },
-
-        showCreateFolderForm: function showCreateFolderForm() {
-            $(this.createFolderFormElement).modal('show');
-        },
-
-        showEditFolderForm: function showEditFolderForm(folder) {
-            this.editFolderModel = folder;
-            $(this.editFolderFormElement).modal('show');
-        },
-
-        createFolder: function createFolder() {
-            this.createFolderModel['parent_id'] = this.parent !== null ? this.parent.id : null;
-            this.createFolderModel['type_id'] = 2; // TODO: const
-
-            persistence.createFolder(this.createFolderModel, function (folder) {
-                this.folders.push(folder);
-
-                this.createFolderModel = {};
-                $(this.createFolderFormElement).modal('hide');
-                sideMenu.initialize();
-            }.bind(this));
-        },
-
-        editFolder: function editFolder() {
-            persistence.editFolder(this.editFolderModel.id, this.editFolderModel, function (folder) {
-                for (var i = 0, length = this.folders.length; i < length; i++) {
-                    if (this.folders[i].id == folder.id) {
-                        this.folders[i] = folder;
-                    }
-                }
-
-                this.editFolderModel = {};
-                $(this.editFolderFormElement).modal('hide');
-                sideMenu.initialize();
-            }.bind(this));
-        },
-
-        deleteFolder: function deleteFolder(folder) {
-            if (!confirm("Are you sure you want to delete this folder?")) {
-                return;
-            }
-
-            persistence.deleteFolder(folder.id, function () {
-                sideMenu.initialize();
-            }.bind(this));
-
-            var index = this.folders.indexOf(folder);
-            this.folders.splice(index, 1);
-        },
-
-        showCreateBookmarkForm: function showCreateBookmarkForm() {
-            $(this.createBookmarkFormElement).modal('show');
-        },
-
-        showEditBookmarkForm: function showEditBookmarkForm(bookmark) {
-            this.editBookmarkModel = bookmark;
-            $(this.editBookmarkFormElement).modal('show');
-        },
-
-        createBookmark: function createBookmark() {
-            this.createBookmarkModel['parent_id'] = this.parent !== null ? this.parent.id : null;
-            this.createBookmarkModel['type_id'] = 1; // TODO: const
-
-            persistence.createBookmark(this.createBookmarkModel, function (bookmark) {
-                this.bookmarks.push(bookmark);
-
-                this.createBookmarkModel = {};
-                $(this.createBookmarkFormElement).modal('hide');
-            }.bind(this));
-        },
-
-        editBookmark: function editBookmark() {
-            persistence.editBookmark(this.editBookmarkModel.id, this.editBookmarkModel, function (bookmark) {
-                for (var i = 0, length = this.bookmarks.length; i < length; i++) {
-                    if (this.bookmarks[i].id == bookmark.id) {
-                        this.bookmarks[i] = bookmark;
-                    }
-                }
-
-                this.editBookmarkModel = {};
-                $(this.editBookmarkFormElement).modal('hide');
-            }.bind(this));
-        },
-
-        deleteBookmark: function deleteBookmark(bookmark) {
-            if (!confirm("Are you sure you want to delete this bookmark?")) {
-                return;
-            }
-
-            persistence.deleteBookmark(bookmark.id);
-
-            var index = this.bookmarks.indexOf(bookmark);
-            this.bookmarks.splice(index, 1);
-        },
-
-        deleteSelected: function deleteSelected() {
-            if (!confirm("Are you sure you want to delete these bookmarks?")) {
-                return;
-            }
-
-            persistence.deleteBookmarks({ ids: this.selectedBookmarks }, function () {
-                sideMenu.initialize();
-            });
-
-            this.bookmarks.forEach(function (bookmark, index) {
-                if (this.selectedBookmarks.indexOf(bookmark.id) >= 0) {
-                    this.bookmarks.splice(index, 1);
-                }
-            }.bind(this));
-
-            this.folders.forEach(function (folder, index) {
-                if (this.selectedBookmarks.indexOf(folder.id) >= 0) {
-                    this.folders.splice(index, 1);
-                }
-            }.bind(this));
-
-            this.selectedBookmarks = [];
-        },
-
-        enableMovingMode: function enableMovingMode() {
-            this.movingMode = true;
-        },
-
-        moveSelected: function moveSelected(folderId) {
-            var data = {
-                parentId: folderId,
-                ids: this.selectedBookmarks
-            };
-
-            this.selectedBookmarks = [];
-            this.movingMode = false;
-
-            persistence.moveBookmarks(data, function () {
-                var currentFolderId = this.parent ? this.parent.id : null;
-                this.loadFolder(currentFolderId);
-                sideMenu.initialize();
-            }.bind(this));
-        },
-
-        cancelSelection: function cancelSelection() {
-            this.selectedBookmarks = [];
-            this.movingMode = false;
-        }
-    }
+  el: '#app'
 });
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(13);
+window._ = __webpack_require__(14);
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -977,9 +863,9 @@ window._ = __webpack_require__(13);
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(15);
+  window.$ = window.jQuery = __webpack_require__(16);
 
-  __webpack_require__(16);
+  __webpack_require__(17);
 } catch (e) {}
 
 /**
@@ -988,7 +874,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(17);
+window.axios = __webpack_require__(18);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -1024,7 +910,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -18113,10 +17999,10 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(14)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(15)(module)))
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -18144,7 +18030,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -28404,7 +28290,7 @@ return jQuery;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 /*!
@@ -30787,21 +30673,21 @@ if (typeof jQuery === 'undefined') {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(18);
+module.exports = __webpack_require__(19);
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(3);
-var Axios = __webpack_require__(20);
+var bind = __webpack_require__(4);
+var Axios = __webpack_require__(21);
 var defaults = __webpack_require__(2);
 
 /**
@@ -30835,15 +30721,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(8);
-axios.CancelToken = __webpack_require__(34);
-axios.isCancel = __webpack_require__(7);
+axios.Cancel = __webpack_require__(9);
+axios.CancelToken = __webpack_require__(35);
+axios.isCancel = __webpack_require__(8);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(35);
+axios.spread = __webpack_require__(36);
 
 module.exports = axios;
 
@@ -30852,7 +30738,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 /*!
@@ -30879,7 +30765,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30887,8 +30773,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(2);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(29);
-var dispatchRequest = __webpack_require__(30);
+var InterceptorManager = __webpack_require__(30);
+var dispatchRequest = __webpack_require__(31);
 
 /**
  * Create a new instance of Axios
@@ -30965,7 +30851,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30984,13 +30870,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(6);
+var createError = __webpack_require__(7);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -31017,7 +30903,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31045,7 +30931,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31120,7 +31006,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31180,7 +31066,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31255,7 +31141,7 @@ module.exports = (
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31298,7 +31184,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31358,7 +31244,7 @@ module.exports = (
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31417,18 +31303,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(31);
-var isCancel = __webpack_require__(7);
+var transformData = __webpack_require__(32);
+var isCancel = __webpack_require__(8);
 var defaults = __webpack_require__(2);
-var isAbsoluteURL = __webpack_require__(32);
-var combineURLs = __webpack_require__(33);
+var isAbsoluteURL = __webpack_require__(33);
+var combineURLs = __webpack_require__(34);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -31510,7 +31396,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31537,7 +31423,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31558,7 +31444,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31579,13 +31465,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(8);
+var Cancel = __webpack_require__(9);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -31643,7 +31529,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31677,25 +31563,56 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 36 */,
 /* 37 */,
-/* 38 */
-/***/ (function(module, exports) {
+/* 38 */,
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// removed by extract-text-webpack-plugin
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var EventManager = function () {
+    function EventManager() {
+        _classCallCheck(this, EventManager);
+
+        this.listeners = [];
+    }
+
+    _createClass(EventManager, [{
+        key: "on",
+        value: function on(eventName, listener) {
+            if (!this.listeners[eventName]) {
+                this.listeners[eventName] = [];
+            }
+
+            this.listeners[eventName].push(listener);
+        }
+    }, {
+        key: "trigger",
+        value: function trigger(eventName) {
+            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                args[_key - 1] = arguments[_key];
+            }
+
+            if (!this.listeners[eventName]) {
+                return;
+            }
+
+            this.listeners[eventName].forEach(function (listener) {
+                listener.apply(undefined, args);
+            });
+        }
+    }]);
+
+    return EventManager;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (EventManager);
 
 /***/ }),
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -31790,7 +31707,7 @@ var Persistence = function () {
 ;
 
 /***/ }),
-/* 50 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -31855,51 +31772,1956 @@ var SideMenu = function () {
 ;
 
 /***/ }),
-/* 51 */
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(43)
+/* template */
+var __vue_template__ = __webpack_require__(44)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ListingPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-bb3f5d68", Component.options)
+  } else {
+    hotAPI.reload("data-v-bb3f5d68", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            parent: null,
+            breadcrumbs: [],
+            folders: [],
+            bookmarks: [],
+            searchTerm: '',
+            editFolderModel: {},
+            editBookmarkModel: {},
+            selectedBookmarks: [],
+            movingMode: false
+        };
+    },
 
-var EventManager = function () {
-    function EventManager() {
-        _classCallCheck(this, EventManager);
+    mounted: function mounted() {
+        window.eventManager.on('clickedFolder', this.clickedFolder);
 
-        this.listeners = [];
-    }
+        this.loadData();
+        window.sideMenu.initialize(); // TODO: ar trebui sa fie doar un event de folders changed
+    },
 
-    _createClass(EventManager, [{
-        key: "on",
-        value: function on(eventName, listener) {
-            if (!this.listeners[eventName]) {
-                this.listeners[eventName] = [];
+
+    methods: {
+        loadData: function loadData() {
+            this.loadFolder();
+        },
+        emitEvent: function emitEvent(eventName, data) {
+            window.em.$emit(eventName, data);
+        },
+        clickedFolder: function clickedFolder(id) {
+            if (this.movingMode) {
+                this.moveSelected(id);
+            } else {
+                this.loadFolder(id);
+            }
+        },
+        loadFolder: function loadFolder(id, unselectSideMenu) {
+            var callback = function (response) {
+                this.folders = response.folders;
+                this.bookmarks = response.bookmarks;
+                this.parent = response.parent;
+                this.breadcrumbs = response.breadcrumbs;
+            }.bind(this);
+
+            if (id != null) {
+                window.persistence.getFolder(id, callback);
+            } else {
+                window.persistence.getRootFolder(callback);
             }
 
-            this.listeners[eventName].push(listener);
-        }
-    }, {
-        key: "trigger",
-        value: function trigger(eventName) {
-            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                args[_key - 1] = arguments[_key];
+            if (unselectSideMenu) {
+                window.sideMenu.unselectAll();
             }
-
-            if (!this.listeners[eventName]) {
+        },
+        search: function search() {
+            // inclusiv daca e un spatiu gol
+            if (this.searchTerm === '') {
+                this.loadFolder(null, true);
                 return;
             }
 
-            this.listeners[eventName].forEach(function (listener) {
-                listener.apply(undefined, args);
+            window.persistence.searchBookmarks(this.searchTerm, function (response) {
+                this.bookmarks = [];
+                this.folders = [];
+                this.breadcrumbs = [];
+                this.parent = { name: "Search results for '" + this.searchTerm + "'" };
+
+                for (var i = 0; i < response.length; i++) {
+                    if (response[i].type_id == 2) {
+                        // TODO: const
+                        this.folders.push(response[i]);
+                    } else {
+                        this.bookmarks.push(response[i]);
+                    }
+                }
+
+                this.searchTerm = '';
+                window.sideMenu.unselectAll();
+            }.bind(this));
+        },
+        deleteFolder: function deleteFolder(folder) {
+            if (!confirm("Are you sure you want to delete this folder?")) {
+                return;
+            }
+
+            window.persistence.deleteFolder(folder.id, function () {
+                window.sideMenu.initialize();
+            }.bind(this));
+
+            var index = this.folders.indexOf(folder);
+            this.folders.splice(index, 1);
+        },
+        deleteBookmark: function deleteBookmark(bookmark) {
+            if (!confirm("Are you sure you want to delete this bookmark?")) {
+                return;
+            }
+
+            window.persistence.deleteBookmark(bookmark.id);
+
+            var index = this.bookmarks.indexOf(bookmark);
+            this.bookmarks.splice(index, 1);
+        },
+        deleteSelected: function deleteSelected() {
+            if (!confirm("Are you sure you want to delete these bookmarks?")) {
+                return;
+            }
+
+            window.persistence.deleteBookmarks({ ids: this.selectedBookmarks }, function () {
+                window.sideMenu.initialize();
             });
+
+            this.bookmarks.forEach(function (bookmark, index) {
+                if (this.selectedBookmarks.indexOf(bookmark.id) >= 0) {
+                    this.bookmarks.splice(index, 1);
+                }
+            }.bind(this));
+
+            this.folders.forEach(function (folder, index) {
+                if (this.selectedBookmarks.indexOf(folder.id) >= 0) {
+                    this.folders.splice(index, 1);
+                }
+            }.bind(this));
+
+            this.selectedBookmarks = [];
+        },
+        enableMovingMode: function enableMovingMode() {
+            this.movingMode = true;
+        },
+        moveSelected: function moveSelected(folderId) {
+            var data = {
+                parentId: folderId,
+                ids: this.selectedBookmarks
+            };
+
+            this.selectedBookmarks = [];
+            this.movingMode = false;
+
+            window.persistence.moveBookmarks(data, function () {
+                var currentFolderId = this.parent ? this.parent.id : null;
+                this.loadFolder(currentFolderId);
+                window.sideMenu.initialize();
+            }.bind(this));
+        },
+        cancelSelection: function cancelSelection() {
+            this.selectedBookmarks = [];
+            this.movingMode = false;
+        },
+        createFolder: function createFolder(folder) {
+            this.folders.push(folder);
+
+            window.sideMenu.initialize();
+        },
+        createBookmark: function createBookmark(bookmark) {
+            this.bookmarks.push(bookmark);
+        },
+        updateFolder: function updateFolder(folder) {
+            console.log(this.folders);
+
+            for (var i = 0, length = this.folders.length; i < length; i++) {
+                if (this.folders[i].id == folder.id) {
+                    this.folders[i].name = folder.name;
+                }
+            }
+
+            window.sideMenu.initialize();
+        },
+        updateBookmark: function updateBookmark(bookmark) {
+            for (var i = 0, length = this.bookmarks.length; i < length; i++) {
+                if (this.bookmarks[i].id == bookmark.id) {
+                    this.bookmarks[i].name = bookmark.name;
+                    this.bookmarks[i].url = bookmark.url;
+                }
+            }
         }
-    }]);
+    }
+});
 
-    return EventManager;
-}();
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/* harmony default export */ __webpack_exports__["a"] = (EventManager);
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { attrs: { id: "listing-page" } },
+    [
+      _c(
+        "div",
+        { staticClass: "row", staticStyle: { "margin-bottom": "10px" } },
+        [
+          _c("div", { staticClass: "col-md-12" }, [
+            _c(
+              "form",
+              {
+                on: {
+                  submit: function($event) {
+                    $event.preventDefault()
+                    _vm.search($event)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "input-group" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.searchTerm,
+                        expression: "searchTerm"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "text",
+                      name: "searchTerm",
+                      placeholder: "Search for..."
+                    },
+                    domProps: { value: _vm.searchTerm },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.searchTerm = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm._m(0)
+                ])
+              ]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-12" }, [
+          _c("div", { staticClass: "panel panel-default" }, [
+            _c("div", { staticClass: "panel-heading" }, [
+              _vm.parent
+                ? _c(
+                    "span",
+                    [
+                      _c(
+                        "a",
+                        {
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              _vm.loadFolder(null, true)
+                            }
+                          }
+                        },
+                        [_vm._v("Home")]
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.breadcrumbs, function(breadcrumb) {
+                        return _c("span", [
+                          _vm._v(
+                            "\n                            /\n                            "
+                          ),
+                          _c(
+                            "a",
+                            {
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.loadFolder(breadcrumb.id, true)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(breadcrumb.name) +
+                                  "\n                            "
+                              )
+                            ]
+                          )
+                        ])
+                      }),
+                      _vm._v(
+                        "\n\n                        / " +
+                          _vm._s(_vm.parent.name) +
+                          "\n                    "
+                      )
+                    ],
+                    2
+                  )
+                : _c("span", [
+                    _vm._v(
+                      "\n                        Home\n                    "
+                    )
+                  ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: !_vm.selectedBookmarks.length,
+                      expression: "!selectedBookmarks.length"
+                    }
+                  ],
+                  staticClass: "top-button-group"
+                },
+                [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-success btn-sm pull-right",
+                      staticStyle: { "margin-top": "-5px" },
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.emitEvent("showCreateBookmarkForm")
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Create Bookmark\n                        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary btn-sm pull-right",
+                      staticStyle: {
+                        "margin-top": "-5px",
+                        "margin-right": "5px"
+                      },
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.emitEvent("showCreateFolderForm")
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Create Folder\n                        "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.selectedBookmarks.length,
+                      expression: "selectedBookmarks.length"
+                    }
+                  ],
+                  staticClass: "top-button-group"
+                },
+                [
+                  _c("span", [
+                    _vm._v(
+                      _vm._s(_vm.selectedBookmarks.length) + " items selected."
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary btn-sm pull-right",
+                      staticStyle: {
+                        "margin-top": "-5px",
+                        "margin-right": "5px"
+                      },
+                      attrs: { type: "button" },
+                      on: { click: _vm.deleteSelected }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Delete\n                        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: !_vm.movingMode,
+                          expression: "!movingMode"
+                        }
+                      ],
+                      staticClass: "btn btn-warning btn-sm pull-right",
+                      staticStyle: {
+                        "margin-top": "-5px",
+                        "margin-right": "5px"
+                      },
+                      attrs: { type: "button" },
+                      on: { click: _vm.enableMovingMode }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Move\n                        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.movingMode,
+                          expression: "movingMode"
+                        }
+                      ],
+                      staticClass: "btn btn-success btn-sm pull-right",
+                      staticStyle: {
+                        "margin-top": "-5px",
+                        "margin-right": "5px"
+                      },
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.moveSelected(null)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Move to Home\n                        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-default btn-sm pull-right",
+                      staticStyle: {
+                        "margin-top": "-5px",
+                        "margin-right": "5px"
+                      },
+                      attrs: { type: "button" },
+                      on: { click: _vm.cancelSelection }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Cancel\n                        "
+                      )
+                    ]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "panel-body" }, [
+              _vm.parent || _vm.folders.length
+                ? _c(
+                    "ul",
+                    { staticClass: "folder-list" },
+                    [
+                      _vm.parent
+                        ? _c("li", [
+                            _c(
+                              "a",
+                              {
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    _vm.loadFolder(_vm.parent.parent_id, true)
+                                  }
+                                }
+                              },
+                              [
+                                _c("span", {
+                                  staticClass:
+                                    "glyphicon glyphicon-folder-open",
+                                  attrs: { "aria-hidden": "true" }
+                                }),
+                                _vm._v(
+                                  "\n                                 \n                                ..\n                            "
+                                )
+                              ]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm._l(_vm.folders, function(folder) {
+                        return _c("li", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.selectedBookmarks,
+                                expression: "selectedBookmarks"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              value: folder.id,
+                              checked: Array.isArray(_vm.selectedBookmarks)
+                                ? _vm._i(_vm.selectedBookmarks, folder.id) > -1
+                                : _vm.selectedBookmarks
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.selectedBookmarks,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = folder.id,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.selectedBookmarks = $$a.concat([
+                                        $$v
+                                      ]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.selectedBookmarks = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.selectedBookmarks = $$c
+                                }
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.loadFolder(folder.id, true)
+                                }
+                              }
+                            },
+                            [
+                              _c("span", {
+                                staticClass: "glyphicon glyphicon-folder-open",
+                                attrs: { "aria-hidden": "true" }
+                              }),
+                              _vm._v(
+                                "\n                                 \n                                " +
+                                  _vm._s(folder.name) +
+                                  "\n                            "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.emitEvent("showEditFolderForm", folder)
+                                }
+                              }
+                            },
+                            [_vm._v("[edit]")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.deleteFolder(folder)
+                                }
+                              }
+                            },
+                            [_vm._v("[x]")]
+                          )
+                        ])
+                      })
+                    ],
+                    2
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.bookmarks.length
+                ? _c(
+                    "ul",
+                    { staticClass: "bookmark-list" },
+                    _vm._l(_vm.bookmarks, function(bookmark) {
+                      return _c("li", [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.selectedBookmarks,
+                              expression: "selectedBookmarks"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            value: bookmark.id,
+                            checked: Array.isArray(_vm.selectedBookmarks)
+                              ? _vm._i(_vm.selectedBookmarks, bookmark.id) > -1
+                              : _vm.selectedBookmarks
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.selectedBookmarks,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = bookmark.id,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.selectedBookmarks = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.selectedBookmarks = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.selectedBookmarks = $$c
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          { attrs: { href: bookmark.url, target: "_blank" } },
+                          [
+                            _c("img", {
+                              staticStyle: {
+                                height: "16px",
+                                width: "16px",
+                                "margin-right": "3px"
+                              },
+                              attrs: { src: bookmark.icon }
+                            }),
+                            _vm._v(
+                              "\n\n                                " +
+                                _vm._s(bookmark.name) +
+                                "\n                            "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                _vm.emitEvent("showEditBookmarkForm", bookmark)
+                              }
+                            }
+                          },
+                          [_vm._v("[edit]")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                _vm.deleteBookmark(bookmark)
+                              }
+                            }
+                          },
+                          [_vm._v("[x]")]
+                        )
+                      ])
+                    })
+                  )
+                : _vm._e()
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("create-folder-form", {
+        attrs: { parent: _vm.parent },
+        on: { created: _vm.createFolder }
+      }),
+      _vm._v(" "),
+      _c("create-bookmark-form", {
+        attrs: { parent: _vm.parent },
+        on: { created: _vm.createBookmark }
+      }),
+      _vm._v(" "),
+      _c("edit-folder-form", { on: { updated: _vm.updateFolder } }),
+      _vm._v(" "),
+      _c("edit-bookmark-form", { on: { updated: _vm.updateBookmark } })
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "input-group-btn" }, [
+      _c("input", {
+        staticClass: "btn btn-default",
+        attrs: { type: "submit", value: "Go" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-bb3f5d68", module.exports)
+  }
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(46)
+/* template */
+var __vue_template__ = __webpack_require__(47)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CreateFolderForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d1a0a8b6", Component.options)
+  } else {
+    hotAPI.reload("data-v-d1a0a8b6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            modalElement: '#create-folder-modal',
+            folder: {}
+        };
+    },
+
+
+    props: ['parent', 'pushFolder'],
+
+    created: function created() {
+        window.em.$on('showCreateFolderForm', this.showForm);
+    },
+
+
+    methods: {
+        showForm: function showForm() {
+            $(this.modalElement).modal('show');
+        },
+        submit: function submit() {
+            this.folder['parent_id'] = this.parent !== null ? this.parent.id : null;
+            this.folder['type_id'] = 2; // TODO: const
+
+            window.persistence.createFolder(this.folder, function (folder) {
+                this.$emit('created', folder);
+
+                this.folder = {};
+                $(this.modalElement).modal('hide');
+            }.bind(this));
+        }
+    }
+});
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "modal-form" }, [
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "create-folder-modal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "create-folder-modal"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.submit($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Name")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.folder.name,
+                            expression: "folder.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", required: "" },
+                        domProps: { value: _vm.folder.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.folder, "name", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(1)
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title" }, [_vm._v("Create Folder")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "btn btn-primary",
+        attrs: { type: "submit", value: "Create Folder" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d1a0a8b6", module.exports)
+  }
+}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(49)
+/* template */
+var __vue_template__ = __webpack_require__(50)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CreateBookmarkForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3748e9ad", Component.options)
+  } else {
+    hotAPI.reload("data-v-3748e9ad", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            modalElement: '#create-bookmark-modal',
+            bookmark: {}
+        };
+    },
+
+
+    props: ['parent'],
+
+    created: function created() {
+        window.em.$on('showCreateBookmarkForm', this.showForm);
+    },
+
+
+    methods: {
+        showForm: function showForm() {
+            $(this.modalElement).modal('show');
+        },
+        submit: function submit() {
+            this.bookmark['parent_id'] = this.parent !== null ? this.parent.id : null;
+            this.bookmark['type_id'] = 1; // TODO: const
+
+            window.persistence.createBookmark(this.bookmark, function (bookmark) {
+                this.$emit('created', bookmark);
+
+                this.bookmark = {};
+                $(this.modalElement).modal('hide');
+            }.bind(this));
+        }
+    }
+});
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "modal-form" }, [
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "create-bookmark-modal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "create-bookmark-modal"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.submit($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Name:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.bookmark.name,
+                            expression: "bookmark.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", required: "" },
+                        domProps: { value: _vm.bookmark.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.bookmark, "name", $event.target.value)
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Url:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.bookmark.url,
+                            expression: "bookmark.url"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", required: "" },
+                        domProps: { value: _vm.bookmark.url },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.bookmark, "url", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(1)
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title" }, [_vm._v("Create Bookmark")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "btn btn-primary",
+        attrs: { type: "submit", value: "Create Bookmark" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3748e9ad", module.exports)
+  }
+}
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(63)
+/* template */
+var __vue_template__ = __webpack_require__(64)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/EditBookmarkForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-811b730a", Component.options)
+  } else {
+    hotAPI.reload("data-v-811b730a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            editBookmarkFormElement: '#edit-bookmark-modal',
+            bookmark: {
+                name: null,
+                url: null
+            }
+        };
+    },
+
+
+    props: ['parent'],
+
+    created: function created() {
+        window.em.$on('showEditBookmarkForm', this.showForm);
+    },
+
+
+    methods: {
+        showForm: function showForm(bookmark) {
+            this.bookmark = Object.assign({}, bookmark);;
+            $(this.editBookmarkFormElement).modal('show');
+        },
+        editBookmark: function editBookmark() {
+            window.persistence.editBookmark(this.bookmark.id, this.bookmark, function (bookmark) {
+                this.$emit('updated', bookmark);
+
+                this.bookmark = {};
+                $(this.editBookmarkFormElement).modal('hide');
+            }.bind(this));
+        }
+    }
+});
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "edit-bookmark-modal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "edit-bookmark-modal"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  _vm.editBookmark($event)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Name:")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.bookmark.name,
+                        expression: "bookmark.name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "" },
+                    domProps: { value: _vm.bookmark.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.bookmark, "name", $event.target.value)
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Url:")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.bookmark.url,
+                        expression: "bookmark.url"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "" },
+                    domProps: { value: _vm.bookmark.url },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.bookmark, "url", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(1)
+            ]
+          )
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title" }, [_vm._v("Create Bookmark")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "btn btn-primary",
+        attrs: { type: "submit", value: "Save" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-811b730a", module.exports)
+  }
+}
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(66)
+/* template */
+var __vue_template__ = __webpack_require__(67)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/EditFolderForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-07f4381a", Component.options)
+  } else {
+    hotAPI.reload("data-v-07f4381a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            editFolderFormElement: '#edit-folder-modal',
+            folder: {
+                name: null
+            }
+        };
+    },
+
+
+    props: ['parent'],
+
+    created: function created() {
+        window.em.$on('showEditFolderForm', this.showForm);
+    },
+
+
+    methods: {
+        showForm: function showForm(folder) {
+            this.folder = Object.assign({}, folder);
+            $(this.editFolderFormElement).modal('show');
+        },
+        editFolder: function editFolder() {
+            window.persistence.editFolder(this.folder.id, this.folder, function (folder) {
+                this.$emit('updated', folder);
+
+                this.folder = {};
+                $(this.editFolderFormElement).modal('hide');
+            }.bind(this));
+        }
+    }
+});
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "edit-folder-modal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "edit-folder-modal"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  _vm.editFolder($event)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Name")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.folder.name,
+                        expression: "folder.name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "" },
+                    domProps: { value: _vm.folder.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.folder, "name", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(1)
+            ]
+          )
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title" }, [_vm._v("Update Folder")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "btn btn-primary",
+        attrs: { type: "submit", value: "Save Folder" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-07f4381a", module.exports)
+  }
+}
 
 /***/ })
-],[10]);
+],[11]);

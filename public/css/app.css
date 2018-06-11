@@ -8423,3 +8423,7 @@ ul {
   margin-right: 5px;
 }
 
+.modal-form {
+  display: inline;
+}
+
