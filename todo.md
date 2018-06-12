@@ -4,4 +4,5 @@
 - import bookmarks functionality
 - hide create folder/bookmark links while on search results
 - (maybe) move the persistence calls up from the forms
-- search is broken
+- moving after search returns strange results in the listing
+- there are return types, but no argument types

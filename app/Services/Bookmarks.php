@@ -179,9 +179,9 @@ class Bookmarks
      * by type (folders first).
      *
      * @param string $keyword
-     * @return Bookmark[]
+     * @return Collection of Bookmark
      */
-    public function search($keyword): array
+    public function search($keyword): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('name', 'like', "%{$keyword}%")

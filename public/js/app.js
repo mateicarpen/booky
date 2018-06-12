@@ -31880,7 +31880,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             editFolderModel: {},
             editBookmarkModel: {},
             selectedBookmarks: [],
-            movingMode: false
+            movingMode: false,
+            searchMode: false
         };
     },
     mounted: function mounted() {
@@ -31912,6 +31913,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if (unselectSideMenu) {
                 window.sideMenu.unselectAll();
             }
+
+            this.searchMode = false;
         },
         clickedFolder: function clickedFolder(id) {
             if (this.movingMode) {
@@ -31948,6 +31951,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
 
                 window.sideMenu.unselectAll();
+                this.searchMode = true;
             }.bind(this));
         },
         addFolder: function addFolder(folder) {
@@ -32127,8 +32131,8 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
-                      value: !_vm.selectedBookmarks.length,
-                      expression: "!selectedBookmarks.length"
+                      value: !_vm.selectedBookmarks.length && !_vm.searchMode,
+                      expression: "!selectedBookmarks.length && !searchMode"
                     }
                   ],
                   staticClass: "top-button-group"

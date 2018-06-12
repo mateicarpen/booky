@@ -22,7 +22,7 @@
                             Home
                         </span>
 
-                        <div v-show="!selectedBookmarks.length" class="top-button-group">
+                        <div v-show="!selectedBookmarks.length && !searchMode" class="top-button-group">
                             <button type="button" class="btn btn-success btn-sm pull-right create-bookmark-button" @click="emitEvent('showCreateBookmarkForm')">
                                 Create Bookmark
                             </button>
@@ -111,7 +111,8 @@
                 editFolderModel: {},
                 editBookmarkModel: {},
                 selectedBookmarks: [],
-                movingMode: false
+                movingMode: false,
+                searchMode: false
             }
         },
 
@@ -144,6 +145,8 @@
                 if (unselectSideMenu) {
                     window.sideMenu.unselectAll();
                 }
+
+                this.searchMode = false;
             },
 
             clickedFolder(id) {
@@ -183,6 +186,7 @@
                     }
 
                     window.sideMenu.unselectAll();
+                    this.searchMode = true;
                 }.bind(this));
             },
 
