@@ -46,7 +46,7 @@
         ],
 
         created() {
-            window.em.$on('showEditBookmarkForm', this.showForm);
+            window.eventManager.$on('showEditBookmarkForm', this.showForm);
         },
 
         methods: {

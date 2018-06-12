@@ -309,108 +309,7 @@ module.exports = {
 
 
 /***/ }),
-/* 1 */,
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(22);
-
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = __webpack_require__(6);
-  } else if (typeof process !== 'undefined') {
-    // For node use HTTP adapter
-    adapter = __webpack_require__(6);
-  }
-  return adapter;
-}
-
-var defaults = {
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Content-Type');
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data)) {
-      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
-      return JSON.stringify(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    /*eslint no-param-reassign:0*/
-    if (typeof data === 'string') {
-      try {
-        data = JSON.parse(data);
-      } catch (e) { /* Ignore */ }
-    }
-    return data;
-  }],
-
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  }
-};
-
-defaults.headers = {
-  common: {
-    'Accept': 'application/json, text/plain, */*'
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
-
-/***/ }),
-/* 3 */
+/* 1 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -517,6 +416,107 @@ module.exports = function normalizeComponent (
   }
 }
 
+
+/***/ }),
+/* 2 */,
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(0);
+var normalizeHeaderName = __webpack_require__(22);
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(6);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(6);
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
 /* 4 */
@@ -793,7 +793,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(12);
-module.exports = __webpack_require__(51);
+module.exports = __webpack_require__(57);
 
 
 /***/ }),
@@ -802,9 +802,8 @@ module.exports = __webpack_require__(51);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eventManager__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__persistence__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__sideMenu__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__persistence__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__sideMenu__ = __webpack_require__(41);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -816,34 +815,19 @@ __webpack_require__(13);
 
 window.Vue = __webpack_require__(10);
 
-//
-///**
-// * Next, we will create a fresh Vue application instance and attach it to
-// * the page. Then, you may begin adding components to this application
-// * or customize the JavaScript scaffolding to fit your unique needs.
-// */
-//
-//Vue.component('example-component', require('./components/ExampleComponent.vue'));
-//
-//const app = new Vue({
-//    el: '#app'
-//});
 
 
 
-
-
-window.eventManager = new __WEBPACK_IMPORTED_MODULE_0__eventManager__["a" /* default */]();
-window.persistence = new __WEBPACK_IMPORTED_MODULE_1__persistence__["a" /* default */]();
-window.sideMenu = new __WEBPACK_IMPORTED_MODULE_2__sideMenu__["a" /* default */](persistence, eventManager);
+window.eventManager = new Vue({}); // event manager
+window.persistence = new __WEBPACK_IMPORTED_MODULE_0__persistence__["a" /* default */](window.apiToken);
+window.sideMenu = new __WEBPACK_IMPORTED_MODULE_1__sideMenu__["a" /* default */](persistence, eventManager);
 
 Vue.component('listing-page', __webpack_require__(42));
+Vue.component('search-form', __webpack_require__(68));
 Vue.component('create-folder-form', __webpack_require__(45));
 Vue.component('create-bookmark-form', __webpack_require__(48));
-Vue.component('edit-folder-form', __webpack_require__(65));
-Vue.component('edit-bookmark-form', __webpack_require__(62));
-
-window.em = new Vue({}); // event manager
+Vue.component('edit-folder-form', __webpack_require__(51));
+Vue.component('edit-bookmark-form', __webpack_require__(54));
 
 var vue = new Vue({
   el: '#app'
@@ -17999,7 +17983,7 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(15)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(15)(module)))
 
 /***/ }),
 /* 15 */
@@ -30688,7 +30672,7 @@ module.exports = __webpack_require__(19);
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(4);
 var Axios = __webpack_require__(21);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -30771,7 +30755,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(30);
 var dispatchRequest = __webpack_require__(31);
@@ -31312,7 +31296,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(32);
 var isCancel = __webpack_require__(8);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var isAbsoluteURL = __webpack_require__(33);
 var combineURLs = __webpack_require__(34);
 
@@ -31565,53 +31549,7 @@ module.exports = function spread(callback) {
 /***/ }),
 /* 37 */,
 /* 38 */,
-/* 39 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var EventManager = function () {
-    function EventManager() {
-        _classCallCheck(this, EventManager);
-
-        this.listeners = [];
-    }
-
-    _createClass(EventManager, [{
-        key: "on",
-        value: function on(eventName, listener) {
-            if (!this.listeners[eventName]) {
-                this.listeners[eventName] = [];
-            }
-
-            this.listeners[eventName].push(listener);
-        }
-    }, {
-        key: "trigger",
-        value: function trigger(eventName) {
-            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                args[_key - 1] = arguments[_key];
-            }
-
-            if (!this.listeners[eventName]) {
-                return;
-            }
-
-            this.listeners[eventName].forEach(function (listener) {
-                listener.apply(undefined, args);
-            });
-        }
-    }]);
-
-    return EventManager;
-}();
-
-/* harmony default export */ __webpack_exports__["a"] = (EventManager);
-
-/***/ }),
+/* 39 */,
 /* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -31621,9 +31559,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Persistence = function () {
-    function Persistence() {
+    function Persistence(apiToken) {
         _classCallCheck(this, Persistence);
 
+        this.apiToken = apiToken;
         this.apiPrefix = '/api/v1';
     }
 
@@ -31645,6 +31584,8 @@ var Persistence = function () {
     }, {
         key: 'createFolder',
         value: function createFolder(data, callback) {
+            data['type_id'] = 2; // TODO: const
+
             this.makeRequest('POST', '/bookmarks', callback, data);
         }
     }, {
@@ -31665,6 +31606,8 @@ var Persistence = function () {
     }, {
         key: 'createBookmark',
         value: function createBookmark(data, callback) {
+            data['type_id'] = 1; // TODO: const
+
             this.makeRequest('POST', '/bookmarks', callback, data);
         }
     }, {
@@ -31694,7 +31637,7 @@ var Persistence = function () {
                 url: this.apiPrefix + url,
                 data: data,
                 type: method,
-                headers: { 'Authorization': "Bearer " + window.apiToken },
+                headers: { 'Authorization': "Bearer " + this.apiToken },
                 success: callback
             });
         }
@@ -31722,6 +31665,8 @@ var SideMenu = function () {
         this.element = '.treeview';
         this.persistence = persistence;
         this.eventManager = eventManager;
+
+        eventManager.$on('foldersChanged', this.initialize.bind(this));
     }
 
     _createClass(SideMenu, [{
@@ -31734,9 +31679,7 @@ var SideMenu = function () {
                     data: data,
                     levels: 1,
                     onNodeSelected: function (event, node) {
-                        this.eventManager.trigger('clickedFolder', node.folderId);
-
-                        //vue.clickedFolder(node.folderId);
+                        this.eventManager.$emit('clickedFolder', node.folderId);
                     }.bind(this)
                 });
             }.bind(this));
@@ -31776,7 +31719,7 @@ var SideMenu = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(43)
 /* template */
@@ -31926,16 +31869,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -31944,35 +31877,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             breadcrumbs: [],
             folders: [],
             bookmarks: [],
-            searchTerm: '',
             editFolderModel: {},
             editBookmarkModel: {},
             selectedBookmarks: [],
             movingMode: false
         };
     },
-
     mounted: function mounted() {
-        window.eventManager.on('clickedFolder', this.clickedFolder);
+        window.eventManager.$on('clickedFolder', this.clickedFolder);
 
         this.loadData();
-        window.sideMenu.initialize(); // TODO: ar trebui sa fie doar un event de folders changed
+        this.emitFoldersChangedEvent();
     },
 
 
     methods: {
         loadData: function loadData() {
             this.loadFolder();
-        },
-        emitEvent: function emitEvent(eventName, data) {
-            window.em.$emit(eventName, data);
-        },
-        clickedFolder: function clickedFolder(id) {
-            if (this.movingMode) {
-                this.moveSelected(id);
-            } else {
-                this.loadFolder(id);
-            }
         },
         loadFolder: function loadFolder(id, unselectSideMenu) {
             var callback = function (response) {
@@ -31992,18 +31913,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 window.sideMenu.unselectAll();
             }
         },
-        search: function search() {
-            // inclusiv daca e un spatiu gol
-            if (this.searchTerm === '') {
+        clickedFolder: function clickedFolder(id) {
+            if (this.movingMode) {
+                this.moveSelected(id);
+            } else {
+                this.loadFolder(id);
+            }
+        },
+        emitEvent: function emitEvent(eventName, data) {
+            window.eventManager.$emit(eventName, data);
+        },
+        emitFoldersChangedEvent: function emitFoldersChangedEvent() {
+            this.emitEvent('foldersChanged');
+        },
+        search: function search(term) {
+            if (term.trim() === '') {
                 this.loadFolder(null, true);
                 return;
             }
 
-            window.persistence.searchBookmarks(this.searchTerm, function (response) {
+            window.persistence.searchBookmarks(term, function (response) {
                 this.bookmarks = [];
                 this.folders = [];
                 this.breadcrumbs = [];
-                this.parent = { name: "Search results for '" + this.searchTerm + "'" };
+                this.parent = { name: "Search results for '" + term + "'" };
 
                 for (var i = 0; i < response.length; i++) {
                     if (response[i].type_id == 2) {
@@ -32014,9 +31947,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     }
                 }
 
-                this.searchTerm = '';
                 window.sideMenu.unselectAll();
             }.bind(this));
+        },
+        addFolder: function addFolder(folder) {
+            this.folders.push(folder);
+
+            this.emitFoldersChangedEvent();
+        },
+        addBookmark: function addBookmark(bookmark) {
+            this.bookmarks.push(bookmark);
+        },
+        updateFolder: function updateFolder(folder) {
+            for (var i = 0, length = this.folders.length; i < length; i++) {
+                if (this.folders[i].id == folder.id) {
+                    this.folders[i].name = folder.name;
+                }
+            }
+
+            this.emitFoldersChangedEvent();
+        },
+        updateBookmark: function updateBookmark(bookmark) {
+            for (var i = 0, length = this.bookmarks.length; i < length; i++) {
+                if (this.bookmarks[i].id == bookmark.id) {
+                    this.bookmarks[i].name = bookmark.name;
+                    this.bookmarks[i].url = bookmark.url;
+                }
+            }
         },
         deleteFolder: function deleteFolder(folder) {
             if (!confirm("Are you sure you want to delete this folder?")) {
@@ -32024,7 +31981,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
 
             window.persistence.deleteFolder(folder.id, function () {
-                window.sideMenu.initialize();
+                this.emitFoldersChangedEvent();
             }.bind(this));
 
             var index = this.folders.indexOf(folder);
@@ -32046,7 +32003,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
 
             window.persistence.deleteBookmarks({ ids: this.selectedBookmarks }, function () {
-                window.sideMenu.initialize();
+                this.emitFoldersChangedEvent();
             });
 
             this.bookmarks.forEach(function (bookmark, index) {
@@ -32078,39 +32035,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             window.persistence.moveBookmarks(data, function () {
                 var currentFolderId = this.parent ? this.parent.id : null;
                 this.loadFolder(currentFolderId);
-                window.sideMenu.initialize();
+
+                this.emitFoldersChangedEvent();
             }.bind(this));
         },
         cancelSelection: function cancelSelection() {
             this.selectedBookmarks = [];
             this.movingMode = false;
-        },
-        createFolder: function createFolder(folder) {
-            this.folders.push(folder);
-
-            window.sideMenu.initialize();
-        },
-        createBookmark: function createBookmark(bookmark) {
-            this.bookmarks.push(bookmark);
-        },
-        updateFolder: function updateFolder(folder) {
-            console.log(this.folders);
-
-            for (var i = 0, length = this.folders.length; i < length; i++) {
-                if (this.folders[i].id == folder.id) {
-                    this.folders[i].name = folder.name;
-                }
-            }
-
-            window.sideMenu.initialize();
-        },
-        updateBookmark: function updateBookmark(bookmark) {
-            for (var i = 0, length = this.bookmarks.length; i < length; i++) {
-                if (this.bookmarks[i].id == bookmark.id) {
-                    this.bookmarks[i].name = bookmark.name;
-                    this.bookmarks[i].url = bookmark.url;
-                }
-            }
         }
     }
 });
@@ -32127,56 +32058,7 @@ var render = function() {
     "div",
     { attrs: { id: "listing-page" } },
     [
-      _c(
-        "div",
-        { staticClass: "row", staticStyle: { "margin-bottom": "10px" } },
-        [
-          _c("div", { staticClass: "col-md-12" }, [
-            _c(
-              "form",
-              {
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    _vm.search($event)
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: "input-group" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.searchTerm,
-                        expression: "searchTerm"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      name: "searchTerm",
-                      placeholder: "Search for..."
-                    },
-                    domProps: { value: _vm.searchTerm },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.searchTerm = $event.target.value
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _vm._m(0)
-                ])
-              ]
-            )
-          ])
-        ]
-      ),
+      _c("search-form", { on: { submit: _vm.search } }),
       _vm._v(" "),
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-md-12" }, [
@@ -32255,8 +32137,8 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-success btn-sm pull-right",
-                      staticStyle: { "margin-top": "-5px" },
+                      staticClass:
+                        "btn btn-success btn-sm pull-right create-bookmark-button",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -32274,11 +32156,8 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-primary btn-sm pull-right",
-                      staticStyle: {
-                        "margin-top": "-5px",
-                        "margin-right": "5px"
-                      },
+                      staticClass:
+                        "btn btn-primary btn-sm pull-right create-folder-button",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -32318,11 +32197,8 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-primary btn-sm pull-right",
-                      staticStyle: {
-                        "margin-top": "-5px",
-                        "margin-right": "5px"
-                      },
+                      staticClass:
+                        "btn btn-primary btn-sm pull-right delete-button",
                       attrs: { type: "button" },
                       on: { click: _vm.deleteSelected }
                     },
@@ -32344,11 +32220,8 @@ var render = function() {
                           expression: "!movingMode"
                         }
                       ],
-                      staticClass: "btn btn-warning btn-sm pull-right",
-                      staticStyle: {
-                        "margin-top": "-5px",
-                        "margin-right": "5px"
-                      },
+                      staticClass:
+                        "btn btn-warning btn-sm pull-right move-button",
                       attrs: { type: "button" },
                       on: { click: _vm.enableMovingMode }
                     },
@@ -32370,11 +32243,8 @@ var render = function() {
                           expression: "movingMode"
                         }
                       ],
-                      staticClass: "btn btn-success btn-sm pull-right",
-                      staticStyle: {
-                        "margin-top": "-5px",
-                        "margin-right": "5px"
-                      },
+                      staticClass:
+                        "btn btn-success btn-sm pull-right move-home-button",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -32392,11 +32262,8 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-default btn-sm pull-right",
-                      staticStyle: {
-                        "margin-top": "-5px",
-                        "margin-right": "5px"
-                      },
+                      staticClass:
+                        "btn btn-default btn-sm pull-right cancel-button",
                       attrs: { type: "button" },
                       on: { click: _vm.cancelSelection }
                     },
@@ -32592,11 +32459,7 @@ var render = function() {
                           { attrs: { href: bookmark.url, target: "_blank" } },
                           [
                             _c("img", {
-                              staticStyle: {
-                                height: "16px",
-                                width: "16px",
-                                "margin-right": "3px"
-                              },
+                              staticClass: "bookmark-icon",
                               attrs: { src: bookmark.icon }
                             }),
                             _vm._v(
@@ -32643,12 +32506,12 @@ var render = function() {
       _vm._v(" "),
       _c("create-folder-form", {
         attrs: { parent: _vm.parent },
-        on: { created: _vm.createFolder }
+        on: { created: _vm.addFolder }
       }),
       _vm._v(" "),
       _c("create-bookmark-form", {
         attrs: { parent: _vm.parent },
-        on: { created: _vm.createBookmark }
+        on: { created: _vm.addBookmark }
       }),
       _vm._v(" "),
       _c("edit-folder-form", { on: { updated: _vm.updateFolder } }),
@@ -32658,19 +32521,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", { staticClass: "input-group-btn" }, [
-      _c("input", {
-        staticClass: "btn btn-default",
-        attrs: { type: "submit", value: "Go" }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -32685,7 +32536,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(46)
 /* template */
@@ -32771,10 +32622,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
 
-    props: ['parent', 'pushFolder'],
+    props: ['parent'],
 
     created: function created() {
-        window.em.$on('showCreateFolderForm', this.showForm);
+        window.eventManager.$on('showCreateFolderForm', this.showForm);
     },
 
 
@@ -32784,7 +32635,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         submit: function submit() {
             this.folder['parent_id'] = this.parent !== null ? this.parent.id : null;
-            this.folder['type_id'] = 2; // TODO: const
 
             window.persistence.createFolder(this.folder, function (folder) {
                 this.$emit('created', folder);
@@ -32930,7 +32780,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(49)
 /* template */
@@ -33024,7 +32874,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['parent'],
 
     created: function created() {
-        window.em.$on('showCreateBookmarkForm', this.showForm);
+        window.eventManager.$on('showCreateBookmarkForm', this.showForm);
     },
 
 
@@ -33034,7 +32884,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         submit: function submit() {
             this.bookmark['parent_id'] = this.parent !== null ? this.parent.id : null;
-            this.bookmark['type_id'] = 1; // TODO: const
 
             window.persistence.createBookmark(this.bookmark, function (bookmark) {
                 this.$emit('created', bookmark);
@@ -33203,30 +33052,251 @@ if (false) {
 
 /***/ }),
 /* 51 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */,
-/* 61 */,
-/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(63)
+var __vue_script__ = __webpack_require__(52)
 /* template */
-var __vue_template__ = __webpack_require__(64)
+var __vue_template__ = __webpack_require__(53)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/EditFolderForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-07f4381a", Component.options)
+  } else {
+    hotAPI.reload("data-v-07f4381a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            editFolderFormElement: '#edit-folder-modal',
+            folder: {
+                name: null
+            }
+        };
+    },
+
+
+    props: ['parent'],
+
+    created: function created() {
+        window.eventManager.$on('showEditFolderForm', this.showForm);
+    },
+
+
+    methods: {
+        showForm: function showForm(folder) {
+            this.folder = Object.assign({}, folder);
+            $(this.editFolderFormElement).modal('show');
+        },
+        editFolder: function editFolder() {
+            window.persistence.editFolder(this.folder.id, this.folder, function (folder) {
+                this.$emit('updated', folder);
+
+                this.folder = {};
+                $(this.editFolderFormElement).modal('hide');
+            }.bind(this));
+        }
+    }
+});
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "edit-folder-modal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "edit-folder-modal"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  _vm.editFolder($event)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Name")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.folder.name,
+                        expression: "folder.name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "" },
+                    domProps: { value: _vm.folder.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.folder, "name", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(1)
+            ]
+          )
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      ),
+      _vm._v(" "),
+      _c("h4", { staticClass: "modal-title" }, [_vm._v("Update Folder")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "btn btn-primary",
+        attrs: { type: "submit", value: "Save Folder" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-07f4381a", module.exports)
+  }
+}
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(55)
+/* template */
+var __vue_template__ = __webpack_require__(56)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -33265,7 +33335,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 63 */
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -33317,7 +33387,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['parent'],
 
     created: function created() {
-        window.em.$on('showEditBookmarkForm', this.showForm);
+        window.eventManager.$on('showEditBookmarkForm', this.showForm);
     },
 
 
@@ -33338,7 +33408,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 64 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -33487,15 +33557,31 @@ if (false) {
 }
 
 /***/ }),
-/* 65 */
+/* 57 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(66)
+var __vue_script__ = __webpack_require__(69)
 /* template */
-var __vue_template__ = __webpack_require__(67)
+var __vue_template__ = __webpack_require__(70)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -33512,7 +33598,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/EditFolderForm.vue"
+Component.options.__file = "resources/assets/js/components/SearchForm.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -33521,9 +33607,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-07f4381a", Component.options)
+    hotAPI.createRecord("data-v-77f1fa03", Component.options)
   } else {
-    hotAPI.reload("data-v-07f4381a", Component.options)
+    hotAPI.reload("data-v-77f1fa03", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -33534,7 +33620,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 66 */
+/* 69 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -33554,162 +33640,86 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
-            editFolderFormElement: '#edit-folder-modal',
-            folder: {
-                name: null
-            }
+            searchTerm: ''
         };
     },
 
 
-    props: ['parent'],
-
-    created: function created() {
-        window.em.$on('showEditFolderForm', this.showForm);
-    },
-
-
     methods: {
-        showForm: function showForm(folder) {
-            this.folder = Object.assign({}, folder);
-            $(this.editFolderFormElement).modal('show');
-        },
-        editFolder: function editFolder() {
-            window.persistence.editFolder(this.folder.id, this.folder, function (folder) {
-                this.$emit('updated', folder);
-
-                this.folder = {};
-                $(this.editFolderFormElement).modal('hide');
-            }.bind(this));
+        submit: function submit() {
+            this.$emit('submit', this.searchTerm);
         }
     }
 });
 
 /***/ }),
-/* 67 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "modal fade",
-      attrs: {
-        id: "edit-folder-modal",
-        tabindex: "-1",
-        role: "dialog",
-        "aria-labelledby": "edit-folder-modal"
-      }
-    },
-    [
-      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
-        _c("div", { staticClass: "modal-content" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
+  return _c("div", { staticClass: "row search-form" }, [
+    _c("div", { staticClass: "col-md-12" }, [
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              _vm.submit($event)
+            }
+          }
+        },
+        [
+          _c("div", { staticClass: "input-group" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.searchTerm,
+                  expression: "searchTerm"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                name: "searchTerm",
+                placeholder: "Search for..."
+              },
+              domProps: { value: _vm.searchTerm },
               on: {
-                submit: function($event) {
-                  $event.preventDefault()
-                  _vm.editFolder($event)
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.searchTerm = $event.target.value
                 }
               }
-            },
-            [
-              _c("div", { staticClass: "modal-body" }, [
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", [_vm._v("Name")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.folder.name,
-                        expression: "folder.name"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", required: "" },
-                    domProps: { value: _vm.folder.name },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.folder, "name", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _vm._m(1)
-            ]
-          )
-        ])
-      ])
-    ]
-  )
+            }),
+            _vm._v(" "),
+            _vm._m(0)
+          ])
+        ]
+      )
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      ),
-      _vm._v(" "),
-      _c("h4", { staticClass: "modal-title" }, [_vm._v("Update Folder")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-default",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("Close")]
-      ),
-      _vm._v(" "),
+    return _c("span", { staticClass: "input-group-btn" }, [
       _c("input", {
-        staticClass: "btn btn-primary",
-        attrs: { type: "submit", value: "Save Folder" }
+        staticClass: "btn btn-default",
+        attrs: { type: "submit", value: "Go" }
       })
     ])
   }
@@ -33719,7 +33729,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-07f4381a", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-77f1fa03", module.exports)
   }
 }
 

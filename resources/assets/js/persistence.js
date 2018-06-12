@@ -1,5 +1,6 @@
 export default class Persistence {
-    constructor() {
+    constructor(apiToken) {
+        this.apiToken = apiToken;
         this.apiPrefix = '/api/v1';
     }
 
@@ -16,6 +17,8 @@ export default class Persistence {
     }
 
     createFolder(data, callback) {
+        data['type_id'] = 2; // TODO: const
+
         this.makeRequest('POST', '/bookmarks', callback, data);
     }
 
@@ -32,6 +35,8 @@ export default class Persistence {
     }
 
     createBookmark(data, callback) {
+        data['type_id'] = 1; // TODO: const
+
         this.makeRequest('POST', '/bookmarks', callback, data);
     }
 
@@ -56,7 +61,7 @@ export default class Persistence {
             url: this.apiPrefix + url,
             data: data,
             type: method,
-            headers: {'Authorization': "Bearer " + window.apiToken},
+            headers: {'Authorization': "Bearer " + this.apiToken},
             success: callback
         });
     }

@@ -3,6 +3,8 @@ export default class SideMenu {
         this.element = '.treeview';
         this.persistence = persistence;
         this.eventManager = eventManager;
+
+        eventManager.$on('foldersChanged', this.initialize.bind(this));
     }
 
     initialize() {
@@ -13,9 +15,7 @@ export default class SideMenu {
                 data: data,
                 levels: 1,
                 onNodeSelected: function(event, node) {
-                    this.eventManager.trigger('clickedFolder', node.folderId);
-
-                    //vue.clickedFolder(node.folderId);
+                    this.eventManager.$emit('clickedFolder', node.folderId);
                 }.bind(this)
             });
         }.bind(this));

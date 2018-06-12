@@ -36,12 +36,11 @@
         },
 
         props: [
-            'parent',
-            'pushFolder'
+            'parent'
         ],
 
         created() {
-            window.em.$on('showCreateFolderForm', this.showForm);
+            window.eventManager.$on('showCreateFolderForm', this.showForm);
         },
 
         methods: {
@@ -51,7 +50,6 @@
 
             submit() {
                 this.folder['parent_id'] = (this.parent !== null) ? this.parent.id : null;
-                this.folder['type_id'] = 2; // TODO: const
 
                 window.persistence.createFolder(this.folder, function(folder) {
                     this.$emit('created', folder);

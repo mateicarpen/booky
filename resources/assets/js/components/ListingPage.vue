@@ -1,17 +1,7 @@
 <template>
     <div id="listing-page">
-        <div class="row" style="margin-bottom: 10px;">
-            <div class="col-md-12">
-                <form @submit.prevent="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" v-model="searchTerm" name="searchTerm" placeholder="Search for...">
-                        <span class="input-group-btn">
-                            <input type="submit" value="Go" class="btn btn-default"/>
-                        </span>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <search-form v-on:submit="search"></search-form>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -33,10 +23,10 @@
                         </span>
 
                         <div v-show="!selectedBookmarks.length" class="top-button-group">
-                            <button type="button" class="btn btn-success btn-sm pull-right" @click="emitEvent('showCreateBookmarkForm')" style="margin-top: -5px;">
+                            <button type="button" class="btn btn-success btn-sm pull-right create-bookmark-button" @click="emitEvent('showCreateBookmarkForm')">
                                 Create Bookmark
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm pull-right" @click="emitEvent('showCreateFolderForm')" style="margin-top: -5px; margin-right: 5px;">
+                            <button type="button" class="btn btn-primary btn-sm pull-right create-folder-button" @click="emitEvent('showCreateFolderForm')">
                                 Create Folder
                             </button>
                         </div>
@@ -44,19 +34,19 @@
                         <div v-show="selectedBookmarks.length" class="top-button-group">
                             <span>{{ selectedBookmarks.length }} items selected.</span>
 
-                            <button type="button" class="btn btn-primary btn-sm pull-right" @click="deleteSelected" style="margin-top: -5px; margin-right: 5px;">
+                            <button type="button" class="btn btn-primary btn-sm pull-right delete-button" @click="deleteSelected">
                                 Delete
                             </button>
 
-                            <button v-show="!movingMode" type="button" class="btn btn-warning btn-sm pull-right" @click="enableMovingMode" style="margin-top: -5px; margin-right: 5px;">
+                            <button v-show="!movingMode" type="button" class="btn btn-warning btn-sm pull-right move-button" @click="enableMovingMode">
                                 Move
                             </button>
 
-                            <button v-show="movingMode" type="button" class="btn btn-success btn-sm pull-right" @click="moveSelected(null)" style="margin-top: -5px; margin-right: 5px;">
+                            <button v-show="movingMode" type="button" class="btn btn-success btn-sm pull-right move-home-button" @click="moveSelected(null)">
                                 Move to Home
                             </button>
 
-                            <button type="button" class="btn btn-default btn-sm pull-right" @click="cancelSelection" style="margin-top: -5px; margin-right: 5px;">
+                            <button type="button" class="btn btn-default btn-sm pull-right cancel-button" @click="cancelSelection">
                                 Cancel
                             </button>
                         </div>
@@ -90,7 +80,7 @@
                                 <input type="checkbox" v-model="selectedBookmarks" :value="bookmark.id"/>
 
                                 <a :href="bookmark.url" target="_blank">
-                                    <img :src="bookmark.icon" style="height: 16px; width: 16px; margin-right: 3px;"/>
+                                    <img class="bookmark-icon" :src="bookmark.icon"/>
 
                                     {{ bookmark.name }}
                                 </a>
@@ -103,8 +93,8 @@
             </div>
         </div>
 
-        <create-folder-form :parent="parent" v-on:created="createFolder"></create-folder-form>
-        <create-bookmark-form :parent="parent" v-on:created="createBookmark"></create-bookmark-form>
+        <create-folder-form :parent="parent" v-on:created="addFolder"></create-folder-form>
+        <create-bookmark-form :parent="parent" v-on:created="addBookmark"></create-bookmark-form>
         <edit-folder-form v-on:updated="updateFolder"></edit-folder-form>
         <edit-bookmark-form v-on:updated="updateBookmark"></edit-bookmark-form>
     </div>
@@ -112,13 +102,12 @@
 
 <script>
     export default {
-        data: function () {
+        data() {
             return {
                 parent: null,
                 breadcrumbs: [],
                 folders: [],
                 bookmarks: [],
-                searchTerm: '',
                 editFolderModel: {},
                 editBookmarkModel: {},
                 selectedBookmarks: [],
@@ -127,27 +116,15 @@
         },
 
         mounted() {
-            window.eventManager.on('clickedFolder', this.clickedFolder);
+            window.eventManager.$on('clickedFolder', this.clickedFolder);
 
             this.loadData();
-            window.sideMenu.initialize(); // TODO: ar trebui sa fie doar un event de folders changed
+            this.emitFoldersChangedEvent();
         },
 
         methods: {
             loadData() {
                 this.loadFolder();
-            },
-
-            emitEvent(eventName, data) {
-                window.em.$emit(eventName, data);
-            },
-
-            clickedFolder(id) {
-                if (this.movingMode) {
-                    this.moveSelected(id);
-                } else {
-                    this.loadFolder(id);
-                }
             },
 
             loadFolder(id, unselectSideMenu) {
@@ -169,18 +146,33 @@
                 }
             },
 
-            search() {
-                // inclusiv daca e un spatiu gol
-                if (this.searchTerm === '') {
+            clickedFolder(id) {
+                if (this.movingMode) {
+                    this.moveSelected(id);
+                } else {
+                    this.loadFolder(id);
+                }
+            },
+
+            emitEvent(eventName, data) {
+                window.eventManager.$emit(eventName, data);
+            },
+
+            emitFoldersChangedEvent() {
+                this.emitEvent('foldersChanged');
+            },
+
+            search(term) {
+                if (term.trim() === '') {
                     this.loadFolder(null, true);
                     return;
                 }
 
-                window.persistence.searchBookmarks(this.searchTerm, function(response) {
+                window.persistence.searchBookmarks(term, function(response) {
                     this.bookmarks   = [];
                     this.folders     = [];
                     this.breadcrumbs = [];
-                    this.parent      = { name: "Search results for '" + this.searchTerm + "'" };
+                    this.parent      = { name: "Search results for '" + term + "'" };
 
                     for (var i = 0; i < response.length; i++) {
                         if (response[i].type_id == 2) { // TODO: const
@@ -190,9 +182,37 @@
                         }
                     }
 
-                    this.searchTerm = '';
                     window.sideMenu.unselectAll();
                 }.bind(this));
+            },
+
+            addFolder(folder) {
+                this.folders.push(folder);
+
+                this.emitFoldersChangedEvent();
+            },
+
+            addBookmark(bookmark) {
+                this.bookmarks.push(bookmark);
+            },
+
+            updateFolder(folder) {
+                for (var i = 0, length = this.folders.length; i < length; i++) {
+                    if (this.folders[i].id == folder.id) {
+                        this.folders[i].name = folder.name;
+                    }
+                }
+
+                this.emitFoldersChangedEvent();
+            },
+
+            updateBookmark(bookmark) {
+                for (var i = 0, length = this.bookmarks.length; i < length; i++) {
+                    if (this.bookmarks[i].id == bookmark.id) {
+                        this.bookmarks[i].name = bookmark.name;
+                        this.bookmarks[i].url = bookmark.url;
+                    }
+                }
             },
 
             deleteFolder(folder) {
@@ -201,7 +221,7 @@
                 }
 
                 window.persistence.deleteFolder(folder.id, function() {
-                    window.sideMenu.initialize();
+                    this.emitFoldersChangedEvent();
                 }.bind(this));
 
                 var index = this.folders.indexOf(folder);
@@ -225,7 +245,7 @@
                 }
 
                 window.persistence.deleteBookmarks({ids: this.selectedBookmarks}, function() {
-                    window.sideMenu.initialize();
+                    this.emitFoldersChangedEvent();
                 });
 
                 this.bookmarks.forEach(function(bookmark, index) {
@@ -259,44 +279,14 @@
                 window.persistence.moveBookmarks(data, function() {
                     var currentFolderId = this.parent ? this.parent.id : null;
                     this.loadFolder(currentFolderId);
-                    window.sideMenu.initialize();
+
+                    this.emitFoldersChangedEvent();
                 }.bind(this));
             },
 
             cancelSelection() {
                 this.selectedBookmarks = [];
                 this.movingMode = false;
-            },
-
-            createFolder(folder) {
-                this.folders.push(folder);
-
-                window.sideMenu.initialize();
-            },
-
-            createBookmark(bookmark) {
-                this.bookmarks.push(bookmark);
-            },
-
-            updateFolder(folder) {
-                console.log(this.folders);
-
-                for (var i = 0, length = this.folders.length; i < length; i++) {
-                    if (this.folders[i].id == folder.id) {
-                        this.folders[i].name = folder.name;
-                    }
-                }
-
-                window.sideMenu.initialize();
-            },
-
-            updateBookmark(bookmark) {
-                for (var i = 0, length = this.bookmarks.length; i < length; i++) {
-                    if (this.bookmarks[i].id == bookmark.id) {
-                        this.bookmarks[i].name = bookmark.name;
-                        this.bookmarks[i].url = bookmark.url;
-                    }
-                }
             }
         }
     }

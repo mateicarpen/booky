@@ -46,3 +46,20 @@ ul {
 .modal-form {
   display: inline;
 }
+
+.search-form {
+  margin-bottom: 10px;
+}
+
+.create-bookmark-button {
+  margin-top: -5px;
+}
+
+.create-folder-button, .delete-button, .move-button, .move-home-button, .cancel-button {
+  margin-top: -5px;
+  margin-right: 5px;
+}
+
+.bookmark-icon {
+  height: 16px; width: 16px; margin-right: 3px;
+}

@@ -45,7 +45,7 @@
         ],
 
         created() {
-            window.em.$on('showCreateBookmarkForm', this.showForm);
+            window.eventManager.$on('showCreateBookmarkForm', this.showForm);
         },
 
         methods: {
@@ -55,7 +55,6 @@
 
             submit() {
                 this.bookmark['parent_id'] = (this.parent !== null) ? this.parent.id : null;
-                this.bookmark['type_id'] = 1; // TODO: const
 
                 window.persistence.createBookmark(this.bookmark, function(bookmark) {
                     this.$emit('created', bookmark);

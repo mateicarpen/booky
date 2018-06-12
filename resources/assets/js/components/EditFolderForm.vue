@@ -40,7 +40,7 @@
         ],
 
         created() {
-            window.em.$on('showEditFolderForm', this.showForm);
+            window.eventManager.$on('showEditFolderForm', this.showForm);
         },
 
         methods: {

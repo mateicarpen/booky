@@ -1,10 +1,7 @@
 - add typehints, clean docblocks
-- split js in components/files
 - move window.apiToken = '{{ $currentUser->api_token }}'; in layout (and pass the current user)
-- remove inline styles
-- add all functionality from the previous app
 - redesign a bit, ensure it works on mobile
 - import bookmarks functionality
 - hide create folder/bookmark links while on search results
 - (maybe) move the persistence calls up from the forms
-- items on the list are being modified before the form is submitted
+- search is broken
