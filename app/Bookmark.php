@@ -11,6 +11,11 @@ class Bookmark extends Model
         'name', 'url', 'type_id'
     ];
 
+    public function isBookmark(): bool
+    {
+        return $this->type_id == BookmarkType::BOOKMARK;
+    }
+
     public function isFolder(): bool
     {
         return $this->type_id == BookmarkType::FOLDER;

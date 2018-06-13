@@ -3,3 +3,4 @@
 - import bookmarks functionality
 - moving after search returns strange results in the listing
 - (maybe) move the persistence calls up from the forms
+- increase favicon field to longtext

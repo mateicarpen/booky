@@ -12,9 +12,13 @@ class Bookmarks
     /** @var User */
     private $currentUser;
 
-    public function __construct(User $currentUser)
+    /** @var HttpHelper */
+    private $httpHelper;
+
+    public function __construct(User $currentUser, HttpHelper $httpHelper)
     {
         $this->currentUser = $currentUser;
+        $this->httpHelper = $httpHelper;
     }
 
     public function getById(int $id): Bookmark
@@ -108,15 +112,22 @@ class Bookmarks
     /**
      * @return Bookmark
      */
-    public function create(int $parentId = null, int $typeId, string $name, string $url = null): Bookmark
+    public function create(int $typeId, string $url, string $name = null, int $parentId = null): Bookmark
     {
         $bookmark = new Bookmark();
         $bookmark->name = $name;
         $bookmark->parent_id = $parentId;
         $bookmark->type_id = $typeId;
 
-        if (!$bookmark->isFolder()) {
+        if ($bookmark->isBookmark()) {
             $bookmark->url = $url;
+            $pageBody = $this->httpHelper->retrievePageBody($url);
+
+            if (!$bookmark->name) {
+                $bookmark->name = $this->httpHelper->getPageName($pageBody);
+            }
+
+            $bookmark->icon = $this->httpHelper->getIcon($url, $pageBody);
         }
 
         $this->currentUser->bookmarks()->save($bookmark);
@@ -127,13 +138,24 @@ class Bookmarks
     /**
      * @return Bookmark
      */
-    public function update(int $id, string $name, string $url = null): Bookmark
+    public function update(int $id, string $url, string $name = null): Bookmark
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
         $bookmark->name = $name;
 
-        if (!$bookmark->isFolder()) {
-            $bookmark->url = $url;
+        if ($bookmark->isBookmark()) {
+            $oldUrl = $bookmark->url;
+
+            if ($url != $oldUrl) {
+                $bookmark->url = $url;
+                $pageBody = $this->httpHelper->retrievePageBody($url);
+
+                if (!$bookmark->name) {
+                    $bookmark->name = $this->httpHelper->getPageName($pageBody);
+                }
+
+                $bookmark->icon = $this->httpHelper->getIcon($url, $pageBody);
+            }
         }
 
         $bookmark->save();

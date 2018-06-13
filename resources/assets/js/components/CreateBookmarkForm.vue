@@ -4,20 +4,22 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">Create Bookmark</h4>
                     </div>
 
                     <form @submit.prevent="submit">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Name:</label>
-                                <input type="text" v-model="bookmark.name" class="form-control" required/>
+                                <label>Url:</label>
+                                <input type="text" v-model="bookmark.url" class="form-control" required />
                             </div>
 
                             <div class="form-group">
-                                <label>Url:</label>
-                                <input type="text" v-model="bookmark.url" class="form-control" required/>
+                                <label>Name:</label>
+                                <input type="text" v-model="bookmark.name" class="form-control" />
                             </div>
                         </div>
                         <div class="modal-footer">

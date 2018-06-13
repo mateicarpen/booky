@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Bookmark;
 use App\Http\Controllers\Controller;
 use App\Services\Bookmarks;
+use App\Services\HttpHelper;
+use GuzzleHttp\Client;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -15,9 +17,9 @@ class BookmarksController extends Controller
     /** @var Bookmarks */
     private $bookmarks;
 
-    public function __construct(AuthManager $authManager)
+    public function __construct(AuthManager $authManager, Client $httpClient)
     {
-        $this->bookmarks = new Bookmarks($authManager->guard('api')->user());
+        $this->bookmarks = new Bookmarks($authManager->guard('api')->user(), new HttpHelper($httpClient));
     }
 
     /**
@@ -65,16 +67,16 @@ class BookmarksController extends Controller
      */
     public function store(Request $request): Bookmark
     {
-        $name = $request->get('name');
-        $parentId = $request->get('parent_id') ?: null;
         $typeId = $request->get('type_id');
         $url = $request->get('url');
+        $name = $request->get('name');
+        $parentId = $request->get('parent_id') ?: null;
 
         if ($parentId && !$this->bookmarks->hasAccessToFolder($parentId)) {
             throw new NotFoundHttpException('There is no such folder');
         }
 
-        return $this->bookmarks->create($parentId, $typeId, $name, $url);
+        return $this->bookmarks->create($typeId, $url, $name, $parentId);
     }
 
     /**
@@ -89,7 +91,7 @@ class BookmarksController extends Controller
         $name = $request->get('name');
         $url = $request->get('url');
 
-        return $this->bookmarks->update($id, $name, $url);
+        return $this->bookmarks->update($id, $url, $name);
     }
 
     /**
