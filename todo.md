@@ -1,8 +1,5 @@
-- add typehints, clean docblocks
 - move window.apiToken = '{{ $currentUser->api_token }}'; in layout (and pass the current user)
 - redesign a bit, ensure it works on mobile
 - import bookmarks functionality
-- hide create folder/bookmark links while on search results
-- (maybe) move the persistence calls up from the forms
 - moving after search returns strange results in the listing
-- there are return types, but no argument types
+- (maybe) move the persistence calls up from the forms

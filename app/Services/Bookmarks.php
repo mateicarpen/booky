@@ -12,12 +12,12 @@ class Bookmarks
     /** @var User */
     private $currentUser;
 
-    public function __construct($currentUser)
+    public function __construct(User $currentUser)
     {
         $this->currentUser = $currentUser;
     }
 
-    public function getById($id): Bookmark
+    public function getById(int $id): Bookmark
     {
         return $this->currentUser->bookmarks()->findOrFail($id);
     }
@@ -25,10 +25,9 @@ class Bookmarks
     /**
      * Returns an array containing all the parents of this folder (starting from children of the root).
      *
-     * @param Bookmark $folder
      * @return Bookmark[]
      */
-    public function getParentsList($folder): array
+    public function getParentsList(Bookmark $folder): array
     {
         $parents = [];
 
@@ -64,10 +63,9 @@ class Bookmarks
     }
 
     /**
-     * @param int $parentId
      * @return Collection of Bookmark
      */
-    public function getFoldersByParent($parentId): Collection
+    public function getFoldersByParent(int $parentId): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('parent_id', $parentId)
@@ -76,10 +74,9 @@ class Bookmarks
     }
 
     /**
-     * @param int $parentId
      * @return Collection of Bookmark
      */
-    public function getBookmarksByParent($parentId): Collection
+    public function getBookmarksByParent(int $parentId): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('parent_id', $parentId)
@@ -88,10 +85,9 @@ class Bookmarks
     }
 
     /**
-     * @param int $id
      * @return bool
      */
-    public function hasAccessToFolder($id): bool
+    public function hasAccessToFolder(int $id): bool
     {
          return $this->currentUser->bookmarks()
             ->where('id', $id)
@@ -100,10 +96,9 @@ class Bookmarks
     }
 
     /**
-     * @param int $id
      * @return bool
      */
-    public function hasAccessTo($id): bool
+    public function hasAccessTo(int $id): bool
     {
         return $this->currentUser->bookmarks()
             ->where('id', $id)
@@ -111,13 +106,9 @@ class Bookmarks
     }
 
     /**
-     * @param int|null $parentId
-     * @param int $typeId
-     * @param string $name
-     * @param string $url
      * @return Bookmark
      */
-    public function create($parentId, $typeId, $name, $url = null): Bookmark
+    public function create(int $parentId = null, int $typeId, string $name, string $url = null): Bookmark
     {
         $bookmark = new Bookmark();
         $bookmark->name = $name;
@@ -134,12 +125,9 @@ class Bookmarks
     }
 
     /**
-     * @param $id
-     * @param $name
-     * @param $url
      * @return Bookmark
      */
-    public function update($id, $name, $url = null): Bookmark
+    public function update(int $id, string $name, string $url = null): Bookmark
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
         $bookmark->name = $name;
@@ -154,20 +142,15 @@ class Bookmarks
     }
 
     /**
-     * @param $id
      * @throws \Exception
      */
-    public function delete($id)
+    public function delete(int $id): void
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
         $bookmark->delete();
     }
 
-    /**
-     * @param int $id
-     * @param int $parentId
-     */
-    public function move($id, $parentId)
+    public function move(int $id, int $parentId): void
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
         $bookmark->parent_id = $parentId;
@@ -178,10 +161,9 @@ class Bookmarks
      * Returns the bookmarks containing the keyword in the name field, ordered
      * by type (folders first).
      *
-     * @param string $keyword
      * @return Collection of Bookmark
      */
-    public function search($keyword): Collection
+    public function search(string $keyword): Collection
     {
         return $this->currentUser->bookmarks()
             ->where('name', 'like', "%{$keyword}%")
@@ -190,10 +172,9 @@ class Bookmarks
     }
 
     /**
-     * @param int|null $id
      * @return array
      */
-    public function getSubtreeForFolder($id = null): array
+    public function getSubtreeForFolder(int $id = null): array
     {
         $subtree = [];
 
@@ -212,7 +193,7 @@ class Bookmarks
             ];
         }
 
-        // TODO: maybe calculate this as part of the previous function
+        // TODO: maybe calculate this as part of the previous loop
         foreach ($subtree as &$tree) {
             $this->calculateRecursiveBookmarkCount($tree);
         }
@@ -221,10 +202,9 @@ class Bookmarks
     }
 
     /**
-     * @param int $parentId
      * @return int
      */
-    private function getBookmarkCountByParent($parentId): int
+    private function getBookmarkCountByParent(int $parentId): int
     {
         return $this->currentUser->bookmarks()
             ->where('type_id', BookmarkType::BOOKMARK)
@@ -236,7 +216,7 @@ class Bookmarks
      * @param array $subtree This array gets modified by this function
      * @return int
      */
-    private function calculateRecursiveBookmarkCount(&$subtree): int
+    private function calculateRecursiveBookmarkCount(array &$subtree): int
     {
         if (!is_null($subtree['nodes'])) {
             foreach ($subtree['nodes'] as $node) {

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Bookmark;
 use App\Http\Controllers\Controller;
 use App\Services\Bookmarks;
 use Illuminate\Auth\AuthManager;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -20,20 +22,16 @@ class BookmarksController extends Controller
 
     /**
      * Returns a tree structure of the folders belonging to the current user
-     *
-     * @return array
      */
-    public function folderTree()
+    public function folderTree(): array
     {
         return $this->bookmarks->getSubtreeForFolder();
     }
 
     /**
      * Returns the details of the root folder.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): array
     {
         return [
             'folders'     => $this->bookmarks->getAllRootFolders(),
@@ -45,11 +43,8 @@ class BookmarksController extends Controller
 
     /**
      * Returns the details of the specified folder.
-     *
-     * @param $id
-     * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id): array
     {
         $parent = $this->bookmarks->getById($id);
 
@@ -67,11 +62,8 @@ class BookmarksController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): Bookmark
     {
         $name = $request->get('name');
         $parentId = $request->get('parent_id') ?: null;
@@ -87,12 +79,8 @@ class BookmarksController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): Bookmark
     {
         if (!$this->bookmarks->hasAccessTo($id)) {
             throw new NotFoundHttpException('There is no such bookmark');
@@ -106,19 +94,13 @@ class BookmarksController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id): void
     {
         $this->bookmarks->delete($id);
     }
 
-    /**
-     * @param Request $request
-     */
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request): void
     {
         $ids = $request->get('ids');
 
@@ -127,10 +109,7 @@ class BookmarksController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     */
-    public function bulkMove(Request $request)
+    public function bulkMove(Request $request): void
     {
         $parentId = $request->get('parentId') ?: null;
         $ids = $request->get('ids');
@@ -146,11 +125,8 @@ class BookmarksController extends Controller
 
     /**
      * Returns the search results for the specified keyword
-     *
-     * @param string $keyword
-     * @return array
      */
-    public function search($keyword)
+    public function search(string $keyword): Collection
     {
         if (empty($keyword)) {
             return [];

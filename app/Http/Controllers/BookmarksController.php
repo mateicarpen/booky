@@ -11,7 +11,6 @@ class BookmarksController extends Controller
     {
         $currentUser = $authManager->guard()->user();
 
-
         return view('bookmarks.index', [
             'currentUser' => $currentUser,
         ]);
