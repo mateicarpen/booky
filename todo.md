@@ -1,6 +1,9 @@
 - move window.apiToken = '{{ $currentUser->api_token }}'; in layout (and pass the current user)
 - redesign a bit, ensure it works on mobile
-- import bookmarks functionality
 - moving after search returns strange results in the listing
 - (maybe) move the persistence calls up from the forms
 - increase favicon field to longtext
+- ability to reorder folders (or at least sort them alphabetically)
+- larger checkboxes, or ability to click on the whole row
+- customize error messages (page not available etc) to show top menu
+- fix/remove any todos
