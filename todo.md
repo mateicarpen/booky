@@ -1,8 +1,8 @@
-- move window.apiToken = '{{ $currentUser->api_token }}'; in layout (and pass the current user)
 - redesign a bit, ensure it works on mobile
 - moving after search returns strange results in the listing
-- (maybe) move the persistence calls up from the forms
-- increase favicon field to longtext
 - ability to reorder folders (or at least sort them alphabetically)
 - larger checkboxes, or ability to click on the whole row
 - fix/remove any todos
+- the api token never gets generated
+- after registration, user is redirected to 'home', which doesn't exist
+- api_token is very insecure
