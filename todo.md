@@ -5,5 +5,4 @@
 - increase favicon field to longtext
 - ability to reorder folders (or at least sort them alphabetically)
 - larger checkboxes, or ability to click on the whole row
-- customize error messages (page not available etc) to show top menu
 - fix/remove any todos

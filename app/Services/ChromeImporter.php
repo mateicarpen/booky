@@ -39,7 +39,7 @@ class ChromeImporter
     /**
      * @param \DOMNodeList $items
      */
-    private function importFolder($items, int $userId, int $folderId = null)
+    private function importFolder($items, int $userId, int $folderId = null): void
     {
         $folderName = null;
 
