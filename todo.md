@@ -3,6 +3,4 @@
 - ability to reorder folders (or at least sort them alphabetically)
 - larger checkboxes, or ability to click on the whole row
 - fix/remove any todos
-- the api token never gets generated
-- after registration, user is redirected to 'home', which doesn't exist
-- api_token is very insecure
+- api_token is very insecure, since it only gets generated on registration

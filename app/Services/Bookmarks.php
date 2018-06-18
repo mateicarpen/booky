@@ -112,7 +112,7 @@ class Bookmarks
     /**
      * @return Bookmark
      */
-    public function create(int $typeId, string $url, string $name = null, int $parentId = null): Bookmark
+    public function create(int $typeId, string $url = null, string $name = null, int $parentId = null): Bookmark
     {
         $bookmark = new Bookmark();
         $bookmark->name = $name;
