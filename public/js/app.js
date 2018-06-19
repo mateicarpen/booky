@@ -31868,6 +31868,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -31938,7 +31941,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.bookmarks = [];
                 this.folders = [];
                 this.breadcrumbs = [];
-                this.parent = { name: "Search results for '" + term + "'" };
+                this.parent = null;
 
                 for (var i = 0; i < response.length; i++) {
                     if (response[i].type_id == 2) {
@@ -32036,8 +32039,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.movingMode = false;
 
             window.persistence.moveBookmarks(data, function () {
-                var currentFolderId = this.parent ? this.parent.id : null;
-                this.loadFolder(currentFolderId);
+                //                    var currentFolderId = this.parent ? this.parent.id : null;
+                this.loadFolder(folderId);
 
                 this.emitFoldersChangedEvent();
             }.bind(this));
@@ -32067,7 +32070,15 @@ var render = function() {
         _c("div", { staticClass: "col-md-12" }, [
           _c("div", { staticClass: "panel panel-default" }, [
             _c("div", { staticClass: "panel-heading" }, [
-              _vm.parent
+              _vm.searchMode
+                ? _c("span", [
+                    _vm._v(
+                      "\n                        Search Results\n                    "
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              !_vm.searchMode && _vm.parent
                 ? _c(
                     "span",
                     [
@@ -32117,11 +32128,15 @@ var render = function() {
                     ],
                     2
                   )
-                : _c("span", [
+                : _vm._e(),
+              _vm._v(" "),
+              !_vm.searchMode && !_vm.parent
+                ? _c("span", [
                     _vm._v(
                       "\n                        Home\n                    "
                     )
-                  ]),
+                  ])
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "div",

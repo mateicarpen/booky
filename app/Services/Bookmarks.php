@@ -51,7 +51,7 @@ class Bookmarks
     {
         return $this->currentUser->bookmarks()
             ->whereNull('parent_id')
-            ->where('type_id', BookmarkType::FOLDER) // TODO: scope? Same below
+            ->where('type_id', BookmarkType::FOLDER)
             ->get();
     }
 
@@ -172,7 +172,7 @@ class Bookmarks
         $bookmark->delete();
     }
 
-    public function move(int $id, int $parentId): void
+    public function move(int $id, int $parentId = null): void
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
         $bookmark->parent_id = $parentId;

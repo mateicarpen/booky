@@ -1,6 +1,4 @@
-- redesign a bit, ensure it works on mobile
-- moving after search returns strange results in the listing
-- ability to reorder folders (or at least sort them alphabetically)
-- larger checkboxes, or ability to click on the whole row
 - fix/remove any todos
+- redesign a bit, ensure it works on mobile
 - api_token is very insecure, since it only gets generated on registration
+- ability to reorder folders (or at least sort them alphabetically)

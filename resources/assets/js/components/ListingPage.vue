@@ -6,7 +6,10 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <span v-if="parent">
+                        <span v-if="searchMode">
+                            Search Results
+                        </span>
+                        <span v-if="!searchMode && parent">
                             <a @click.prevent="loadFolder(null, true)">Home</a>
 
                             <span v-for="breadcrumb in breadcrumbs">
@@ -18,7 +21,7 @@
 
                             / {{ parent.name }}
                         </span>
-                        <span v-else="!parent">
+                        <span v-if="!searchMode && !parent">
                             Home
                         </span>
 
@@ -175,7 +178,7 @@
                     this.bookmarks   = [];
                     this.folders     = [];
                     this.breadcrumbs = [];
-                    this.parent      = { name: "Search results for '" + term + "'" };
+                    this.parent      = null;
 
                     for (var i = 0; i < response.length; i++) {
                         if (response[i].type_id == 2) { // TODO: const
@@ -281,8 +284,8 @@
                 this.movingMode = false;
 
                 window.persistence.moveBookmarks(data, function() {
-                    var currentFolderId = this.parent ? this.parent.id : null;
-                    this.loadFolder(currentFolderId);
+//                    var currentFolderId = this.parent ? this.parent.id : null;
+                    this.loadFolder(folderId);
 
                     this.emitFoldersChangedEvent();
                 }.bind(this));
