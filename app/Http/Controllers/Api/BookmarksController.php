@@ -19,7 +19,9 @@ class BookmarksController extends Controller
 
     public function __construct(AuthManager $authManager, Client $httpClient)
     {
-        $this->bookmarks = new Bookmarks($authManager->guard('api')->user(), new HttpHelper($httpClient));
+        $currentUser = $authManager->guard('api')->user();
+
+        $this->bookmarks = new Bookmarks(new HttpHelper($httpClient), $currentUser);
     }
 
     /**

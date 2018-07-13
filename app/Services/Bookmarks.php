@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Collection;
 
 class Bookmarks
 {
-    /** @var User */
-    private $currentUser;
-
     /** @var HttpHelper */
     private $httpHelper;
 
-    public function __construct(User $currentUser, HttpHelper $httpHelper)
+    /** @var User */
+    private $currentUser;
+
+    public function __construct(HttpHelper $httpHelper, User $currentUser = null)
     {
-        $this->currentUser = $currentUser;
         $this->httpHelper = $httpHelper;
+        $this->currentUser = $currentUser;
     }
 
     public function getById(int $id): Bookmark
