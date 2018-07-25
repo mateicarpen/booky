@@ -12,10 +12,5 @@ Route::group(['prefix' => '/v1', 'middleware' => 'auth:api'], function() {
     Route::    post('/bookmarks/bulkDelete',    'Api\BookmarksController@bulkDelete');
     Route::    post('/bookmarks/bulkMove',      'Api\BookmarksController@bulkMove');
 
-    Route::resource('/bookmarks',               'Api\BookmarksController');
+    Route::resource('/bookmarks',             'Api\BookmarksController');
 });
-
-//
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});

@@ -284,7 +284,6 @@
                 this.movingMode = false;
 
                 window.persistence.moveBookmarks(data, function() {
-//                    var currentFolderId = this.parent ? this.parent.id : null;
                     this.loadFolder(folderId);
 
                     this.emitFoldersChangedEvent();
