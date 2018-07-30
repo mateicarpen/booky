@@ -2,3 +2,4 @@
 - redesign a bit, ensure it works on mobile
 - api_token is very insecure, since it only gets generated on registration
 - ability to reorder folders (or at least sort them alphabetically)
+- adding bookmarks doesn't seem to modify the side menu
