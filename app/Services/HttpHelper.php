@@ -77,7 +77,7 @@ class HttpHelper
         return $iconPath;
     }
 
-    private function retrieveIcon(string $iconUrl): string
+    private function retrieveIcon(string $iconUrl): ?string
     {
         $icon = null;
 
@@ -85,7 +85,6 @@ class HttpHelper
             $rawIcon = $this->httpClient->get($iconUrl)->getBody()->getContents();
             $icon = 'data:image/png;base64,' . base64_encode($rawIcon);
         } catch (\Exception $e) {
-            $icon = null;
         }
 
         return $icon;
