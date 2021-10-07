@@ -40,3 +40,7 @@ services:
     volumes:
       - ../:/var/www
       - ./docker-compose/nginx:/etc/nginx/conf.d
+
+networks:
+  default:
+    name: booky
