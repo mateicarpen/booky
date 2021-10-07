@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Bookmark;
-use App\BookmarkType;
+use App\Models\Bookmark;
+use App\Models\BookmarkType;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

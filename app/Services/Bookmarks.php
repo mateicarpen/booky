@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Bookmark;
-use App\BookmarkType;
-use App\User;
+use App\Models\Bookmark;
+use App\Models\BookmarkType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 class Bookmarks
@@ -88,9 +88,6 @@ class Bookmarks
             ->get();
     }
 
-    /**
-     * @return bool
-     */
     public function hasAccessToFolder(int $id): bool
     {
          return $this->currentUser->bookmarks()
@@ -99,9 +96,6 @@ class Bookmarks
             ->exists();
     }
 
-    /**
-     * @return bool
-     */
     public function hasAccessTo(int $id): bool
     {
         return $this->currentUser->bookmarks()
@@ -109,9 +103,6 @@ class Bookmarks
             ->exists();
     }
 
-    /**
-     * @return Bookmark
-     */
     public function create(int $typeId, string $url = null, string $name = null, int $parentId = null): Bookmark
     {
         $bookmark = new Bookmark();
@@ -135,9 +126,6 @@ class Bookmarks
         return $bookmark;
     }
 
-    /**
-     * @return Bookmark
-     */
     public function update(int $id, string $url, string $name = null): Bookmark
     {
         $bookmark = $this->currentUser->bookmarks()->findOrFail($id);
@@ -193,9 +181,6 @@ class Bookmarks
             ->get();
     }
 
-    /**
-     * @return array
-     */
     public function getSubtreeForFolder(int $id = null): array
     {
         $subtree = [];
@@ -223,9 +208,6 @@ class Bookmarks
         return $subtree;
     }
 
-    /**
-     * @return int
-     */
     private function getBookmarkCountByParent(int $parentId): int
     {
         return $this->currentUser->bookmarks()
@@ -234,10 +216,6 @@ class Bookmarks
             ->count();
     }
 
-    /**
-     * @param array $subtree This array gets modified by this function
-     * @return int
-     */
     private function calculateRecursiveBookmarkCount(array &$subtree): int
     {
         if (!is_null($subtree['nodes'])) {

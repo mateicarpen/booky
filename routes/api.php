@@ -1,16 +1,24 @@
 <?php
 
+use App\Http\Controllers\Api\BookmarksController;
 use Illuminate\Support\Facades\Route;
 
-/**
- * Api Routes
- */
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
 
 Route::group(['prefix' => '/v1', 'middleware' => 'auth:api'], function() {
-    Route::     get('/bookmarks/folderTree',    'Api\BookmarksController@folderTree');
-    Route::     get('/bookmarks/search/{term}', 'Api\BookmarksController@search');
-    Route::    post('/bookmarks/bulkDelete',    'Api\BookmarksController@bulkDelete');
-    Route::    post('/bookmarks/bulkMove',      'Api\BookmarksController@bulkMove');
+    Route::get('/bookmarks/folderTree', [BookmarksController::class, 'folderTree']);
+    Route::get('/bookmarks/search/{term}', [BookmarksController::class, 'search']);
+    Route::post('/bookmarks/bulkDelete', [BookmarksController::class, 'bulkDelete']);
+    Route::post('/bookmarks/bulkMove', [BookmarksController::class, 'bulkMove']);
 
-    Route::resource('/bookmarks',             'Api\BookmarksController');
+    Route::resource('/bookmarks',BookmarksController::class);
 });

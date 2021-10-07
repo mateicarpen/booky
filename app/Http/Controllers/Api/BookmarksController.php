@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Bookmark;
+use App\Models\Bookmark;
 use App\Http\Controllers\Controller;
 use App\Services\Bookmarks;
 use App\Services\HttpHelper;

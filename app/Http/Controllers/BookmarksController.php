@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ChromeImporter as Importer;
-use App\User;
+use App\Models\User;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\Request;
 
